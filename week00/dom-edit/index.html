@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dom edit</title>
+    <style>
+        .view-wrap {
+            outline: 1px solid #5ad;
+            height: 200px;
+            width: 100%;
+        }
+        .edit {
+            background: #000;
+            color: #fff;
+            padding: 0.5em;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <iframe src="" name="view" class="view-wrap" id="view"></iframe>
+        <div class="edit-wrap">
+            <textarea name="edit" class="edit" id="edit"></textarea>
+        </div>
+    </div>
+    <script>
+        const init = () => {
+            const editDom = document.getElementById('edit');
+            const viewDom = document.getElementById('view');
+            edit.addEventListener('change', (e) => {
+                console.log(e, e.target.value);
+                const value = e.target.value;
+                // viewDom.innerHTML = value;
+
+                const frame = window.frames['view']
+                frame.document.body.innerHTML = value;
+
+            });
+        }
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
