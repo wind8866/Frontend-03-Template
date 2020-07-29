@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sort</title>
+</head>
+<body>
+    <pre>
+    6 1 2 7 9 3 4 5 10 8
+    6 1 2 5 9 3 4 7 10 8
+    6 1 2 5 4 3 9 7 10 8
+    3 1 2 5 4 6 9 7 10 8
+    2 1 3 5 4 6 9 7 10 8
+    1 2 3 5 4 6 9 7 10 8
+    1 2 3 4 5 6 9 7 10 8
+    1 2 3 4 5 6 9 7 8 10
+    1 2 3 4 5 6 8 7 9 10
+    1 2 3 4 5 6 7 8 9 10
+    </pre>
+    <script>
+        // 1、选取一个目标target
+        // 2、r从右开始向左移动，找到一个小于target的数
+        // 3、l从左开始向右移动，找到一个大于target的数
+        // 4、交换r与l，继续2、3，直到r和l重合
+        // 5、重合的r与target交换
+        // 6、界定开始与结束范围，递归执行1～5
+
+        // 必要条件
+        const arr = [6, 1, 2, 7, 9, 3, 4, 5, 10, 8];
+        const targetIndex = 0;
+        let left = targetIndex + 1;
+        let right = arr.length - 1;
+
+        // 辅助参数
+        let time = 0;
+
+        // 初始化
+        const target = arr[targetIndex];
+        let swapRight = null;
+        let swapleft = null;
+
+        // 主循环
+        while(true) {
+            // 记录右边要交换的位置
+            if (arr[right] < target) {
+                swapRight = right;
+            }
+            // 记录左边要交换的位置
+            if (arr[left] > target) {
+                swapleft = left;
+            }
+            // 若两个都有，则交换
+            if (swapleft !== null && swapRight !== null) {
+                console.log(++time, `交换${arr[swapleft]}-${arr[swapRight]}`, arr)
+                let ware = arr[swapleft];
+                arr[swapleft] = arr[swapRight];
+                arr[swapRight] = ware;
+
+                swapRight = null;
+                swapleft = null;
+            }
+            --right;
+            ++left;
+            if (left >= right) {
+                console.log(++time, `交换target${target}-${arr[right]}`, arr)
+                let ware = arr[right];
+                arr[right] = arr[targetIndex];
+                arr[targetIndex] = ware;
+                break;
+            }
+        }
+        console.log('一次递归完成', arr)
+    </script>
+</body>
+</html>
