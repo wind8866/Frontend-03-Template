@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>装箱转换与拆箱转换</title>
+</head>
+<body>
+<script>
+    const o = {
+        toString() {
+            return '2';
+        },
+        valueOf() {
+            return 1;
+        },
+        [Symbol.toPrimitive]() {
+            return 3;
+        }
+    }
+    
+    const x = {
+        '1': '1',
+        '2': '2',
+        '3': '3',
+    }
+    console.log(x[o]);
+    
+    console.log('Number:' + o);
+    console.log(0 + o);
+    /**
+     * 结论：
+     *  有Symbol.toPrimitive，一定调用该属性
+     *  需要数字时，优先调用valueOf，其次调用toString
+     *  需要字符串时，优先调用toString，否则返回undefined
+     * 
+     *  即使是与字符串相加，也判断为需要数字
+     */
+</script>
+</body>
+</html>

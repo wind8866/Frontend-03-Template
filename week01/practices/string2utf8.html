@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>string转UTF8</title>
+</head>
+<body>
+写一段 JS 的函数，把一个 string 它代表的字节给它转换出来，用 UTF8 对 string 进行遍码。<br>
+参考资料：<br>
+http://www.52unicode.com/<br>
+发现居然有麻将，哈哈：http://www.52unicode.com/mahjong-tiles-zifu<br>
+https://en.wikipedia.org/wiki/UTF-8<br>
+https://es6.ruanyifeng.com/#docs/string-methods#%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95%EF%BC%9AcodePointAt
+<script>
+    // 字符串转码点
+    function string2CodePoint(str) {
+        // 注意不能使用charCodeAt，他最大只能取两字节
+        const codePoint = str.codePointAt();
+        console.log(`U+${codePoint.toString(16).padStart(4, '0')}`);
+        return codePoint;
+    }
+    // 码点转UTF8的二进制字节
+    function codePoint2UTF8(code) {
+        // 一字节 U+0000~U+007F [0,127] 2^0-1~2^7-1(1位辅助位7位数字位)
+        if (0 <= code && code <= 127) {
+            return codePoint.toString(2).padStart(8, '0');
+        }
+        // 二字节 U+0080~U+07FF [128,2047] 2^7~2^11-1(5位辅助位11位数字位)
+        if (128 <= code && code <= 2047) {
+            const binary = codePoint.toString(2);
+            const byte1 = '110' + binary.slice(0, -6).padStart(5, '0');
+            const byte2 = '10' + binary.slice(-6);
+            return byte1 + byte2;
+        }
+        // 三字节 U+0800~U+FFFF [2048,65535] 2^11~2^16-1(8位辅助位16位数字位)
+        if (2048 <= code && code <= 65535) {
+            const binary = codePoint.toString(2);
+            const byte1 = '1110' + binary.slice(0, -12).padStart(4, '0');
+            const byte2 = '10' + binary.slice(-12, -6);
+            const byte3 = '10' + binary.slice(-6);
+            return byte1 + byte2 + byte3;
+        }
+        // 四字节 U+10000~U+10FFFF [65536,1114111] 2^16~2^20+2^16-1(10位辅助位22位数字位)
+        if (65536 <= code && code <= 1114111) {
+            const binary = codePoint.toString(2);
+            const byte1 = '11110' + binary.slice(0, -18).padStart(3, '0');
+            const byte2 = '10' + binary.slice(-18, -12).padStart(6, '0');
+            const byte3 = '10' + binary.slice(-12, -6).padStart(6, '0');
+            const byte4 = '10' + binary.slice(-6).padStart(6, '0');
+            return byte1 + byte2 + byte3 + byte4;
+        }
+    }
+    // ! 33
+    // Ā 256
+    // 上 19978
+    // 😀 128512
+    const codePoint = string2CodePoint('😀');
+    console.log(codePoint);
+    const utf8Code = codePoint2UTF8(codePoint);
+    console.log(utf8Code);
+</script>
+</body>
+</html>
