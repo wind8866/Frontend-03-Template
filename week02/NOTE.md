@@ -14,7 +14,7 @@
 流式处理数据
 
 #### 向服务端请求内容
-整理了一个HTTP的思维导图: [HTTP Tree](./assets/HTTP-tree.md)
+整理了一个HTTP的思维导图: [assets/HTTP-tree.md](./assets/HTTP-tree.md)
 使用TCP连接工具
 ```shell
 telnet time.geekbang.org 80

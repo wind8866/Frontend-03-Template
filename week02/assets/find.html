@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实现状态机</title>
+</head>
+<body>
+<script>
+    // a
+    function findA(text) {
+        for (const word of text) {
+            if (word === 'a') {
+                return true;
+            }
+        }
+        return false;
+    }
+    console.log('findA', findA('g4ddddd'));
+
+    // ab
+    function findAB(text) {
+        let hasA = false;
+        for (const word of text) {
+            if (word === 'a') {
+                hasA = true;
+            } else {
+                if (hasA && word === 'b') {
+                    return true;
+                } else {
+                    hasA = false;
+                }
+            }
+        }
+        return false;
+    }
+    console.log('findAB', findAB('aacadadbaa444'));
+
+    // abcdef
+    {
+        const catchA = (word) => {
+            if (word === 'a') {
+                return catchB;
+            } else {
+                return catchA;
+            }
+        }
+        const catchB = (word) => {
+            if (word === 'b') {
+                return catchC;
+            } else {
+                return catchA();
+            }
+        }
+        const catchC = (word) => {
+            if (word === 'c') {
+                return catchD;
+            } else {
+                return catchA();
+            }
+        }
+        const catchD = (word) => {
+            if (word === 'd') {
+                return catchE;
+            } else {
+                return catchA();
+            }
+        }
+        const catchE = (word) => {
+            if (word === 'e') {
+                return catchF;
+            } else {
+                return catchA();
+            }
+        }
+        const catchF = (word) => {
+            if (word === 'f') {
+                return true;
+            } else {
+                return catchA();
+            }
+        }
+        const findABCDEF = (text) => {
+            let status = catchA;
+            for (const word of text) {
+                status = status(word);
+                if (status === true) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        console.log('findABCDEF', findABCDEF('g4dddddabaabcdefa'));
+    }
+    // abcabx
+    {
+        const catchA1 = (word) => {
+            if (word === 'a') {
+                return catchB1;
+            } else {
+                return catchA1;
+            }
+        }
+        const catchB1 = (word) => {
+            if (word === 'b') {
+                return catchC;
+            } else {
+                return catchA1();
+            }
+        }
+        const catchC = (word) => {
+            if (word === 'c') {
+                return catchA2;
+            } else {
+                return catchA1();
+            }
+        }
+        const catchA2 = (word) => {
+            if (word === 'a') {
+                return catchB2;
+            } else {
+                return catchA1();
+            }
+        }
+        const catchB2 = (word) => {
+            if (word === 'b') {
+                return catchX;
+            } else {
+                return catchA1();
+            }
+        }
+        const catchX = (word) => {
+            if (word === 'x') {
+                return true;
+            } else {
+                return catchA1();
+            }
+        }
+        const findABCABX = (text) => {
+            let status = catchA1;
+            for (const word of text) {
+                status = status(word);
+                if (status === true) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        console.log('findABCABX', findABCABX('g4daddddabcababcdefabcabx'));
+    }
+    
+    // abababx
+    // 动态的生成状态机
+    {
+        const findText = (find, text) => {
+            const findArr = find.split('');
+            const status = {};
+            findArr.forEach((findWord, index) => {
+                status['catch-' + index] = (word) => {
+                    if (word === findWord) {
+                        if (index === text.length - 1) {
+                            return true;
+                        }
+                        return status['catch-' + (index + 1)];
+                    } else {
+                        if (index === 0) {
+                            return status['catch-0'];
+                        }
+                        return status['catch-0'](word);
+                    }
+                }
+            });
+            // console.log(findArr, status);
+            let statusNow = status['catch-0'];
+            for (const word of text) {
+                statusNow = statusNow(word);
+                if (statusNow === true) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        console.log('findText:abababx', findText('abababx', 'aabababxa'));
+        console.log('findText:abcdefghabababxijklmn', findText('abcdefghabababxijklmn', '5abcdefghabababcabcdefghabababxijklmndefghabababxijklmnabxijklmn'));
+    }
+</script>
+</body>
+</html>
