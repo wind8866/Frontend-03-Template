@@ -1,4 +1,5 @@
 const net = require('net');
+const ResponseParser = require('./responseParser');
 
 class Request {
     constructor(args) {
@@ -66,19 +67,6 @@ ${this.bodyText}`
     }
 }
 
-// 解析响应
-class ResponseParser {
-    constructor() {
-        // isFinished
-    }
-    receive(string) {
-        console.log('response body', string);
-        // 感觉这里遇到三个或四个字节会出问题
-        // for(let i = 0; i < string.length; i++) {
-        //     this.receiveChar(string.charAt(i));
-        // }
-    }
-}
 
 /**
  * 这里的void是调用后面的匿名函数
@@ -101,4 +89,5 @@ void async function() {
 
     // 发送请求
     let response = await request.send();
+    console.log(response);
 }();
