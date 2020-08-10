@@ -4,23 +4,27 @@ class TrunkedBodyParser {
         this.current = this.catchLength;
         this.length = 0;
         this.isFinished = false;
-        this.bodyContent = ''
+        this.body = '';
     }
     receive(string) {
+        console.log('response Body', string);
         for(let i = 0; i < string.length; i++) {
+            if (this.isFinished) {
+                break;
+            }
             this.receiveChar(string.charAt(i));
         }
-        return this.bodyContent;
+        return this.body;
     }
     receiveChar(char) {
         this.current = this.current(char);
     }
     catchLength(char) {
-        if (char === '\n') {
+        if (char === '\r') {
             if (this.length === 0) {
                 this.isFinished = true;
             }
-            return this.catchBodyContent;
+            return this.catchLengthEnd;
         } else {
             // ?
             this.length *= 16;
@@ -28,17 +32,24 @@ class TrunkedBodyParser {
             return this.catchLength;
         }
     }
+    catchLengthEnd(char) {
+        if (char === '\n') {
+            return this.catchBodyContent;
+        }
+        return this.catchLengthEnd;
+    }
     catchBodyContent(char) {
-        this.bodyContent += char;// 数组？
+        this.body += char;// 数组？
         if(--this.length === 0) {
-            return this.catchNewLine;
+            return this.catchChunkBodyEnd;
         }
         return this.catchBodyContent;
     }
-    catchNewLine(char) {
+    catchChunkBodyEnd(char) {
         if (char === '\n') {
             return this.catchLength;
         }
+        return this.catchChunkBodyEnd;
     }
 }
 
@@ -50,8 +61,8 @@ class ResponseParser {
         this.status = '';
         this.statusContent = '';
         this.headers = {};
+        this.bodyAll = '';
         this.body = '';
-        this.bodyContent = '';
 
         this.headerKey = '';
         this.headerValue = '';
@@ -64,7 +75,7 @@ class ResponseParser {
         for(let i = 0; i < string.length; i++) {
             this.receiveChar(string.charAt(i));
         }
-        this.bodyContent = this.bodyParser.receive(this.body);
+        this.body = this.bodyParser.receive(this.bodyAll);
         console.log(this);
     }
     receiveChar(char) {
@@ -88,10 +99,15 @@ class ResponseParser {
         }
     }
     catchStatusContent(char) {
-        if (char !== '\n') {
+        if (char !== '\r') {
             this.statusContent += char;
             return this.catchStatusContent;
         } else {
+            return this.catchLineEnd;
+        }
+    }
+    catchLineEnd(char) {
+        if (char === '\n') {
             return this.catchHeaderKey;
         }
     }
@@ -111,49 +127,43 @@ class ResponseParser {
         }
     }
     catchHeaderValue(char) {
-        if (char !== '\n') {
+        if (char !== '\r') {
             this.headerValue += char;
             return this.catchHeaderValue;
         } else {
             this.headers[this.headerKey] = this.headerValue;
             this.headerKey = '';
             this.headerValue = '';
-            return this.catchHeaderBodyLine;
+            return this.catchHeaderLineEnd;
         }
     }
-    catchHeaderBodyLine(char) {
+    catchHeaderLineEnd(char) {
+        // 如果是第二个\r说明请求头已经结束
+        if (char === '\r') {
+            return this.catchHeaderBodyLine;
+        }
+        // 即不是\r、\n，已经到了另一个新请求头
         if (char !== '\n') {
-            // 一个换行
             return this.catchHeaderKey(char);
-        } else {
-            // 两个换行
-            // 响应头结束后需要确定解析body的方式
+        }
+        return this.catchHeaderLineEnd
+    }
+    catchHeaderBodyLine(char) {
+        if (char === '\n') {
+            // 请求头结束
             if (this.headers['Transfer-Encoding'] === 'chunked') {
                 this.bodyParser = new TrunkedBodyParser();
             }
             return this.catchBody;
         }
+        return this.catchHeaderBodyLine;
     }
     catchBody(char) {
         // 剩下的字符都认为是body
-        this.body += char;
+        this.bodyAll += char;
         return this.catchBody;
     }
 }
-
-// const fakeResponse = `HTTP/1.1 200 OK
-// Content-Type: text/html
-// Date: Sat, 08 Aug 2020 07:46:16 GMT
-// Connection: keep-alive
-// Transfer-Encoding: chunked
-
-// c
-// Hello World
-
-// 0
-// `;
-// const re = new ResponseParser();
-// re.receive(fakeResponse);
 
 module.exports = ResponseParser;
 
