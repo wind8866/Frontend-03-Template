@@ -23,6 +23,6 @@
 用 Node.js 写一个小的服务端
 在[assets/server.js](./assets/server.js)
 
-### 第14课
+### 第14节
 跟上课程内容，完成 HTTP 状态解析的代码。
 在[assets/client.js](./assets/client.js)

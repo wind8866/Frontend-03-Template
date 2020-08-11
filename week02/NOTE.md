@@ -6,12 +6,12 @@
 - [ ] 学习ES6异步执行、Permise、ansy、awit等知识
 - [ ] 完成选做的作业
 - [ ] 优化代码，解决代码中的疑惑点
-- [ ] Transfer-Encoding请求头是做什么的？其他请求头的解析方式是什么样的呢？
+- [ ] Transfer-Encoding请求头是做什么的？其他请求头的解析方式是什么样的呢？参考[HTTP 协议中的 Transfer-Encoding](https://imququ.com/post/transfer-encoding-header-in-http.html)
 - [ ] 换行符`\r`和`\n`有什么区别，不同系统中敲击`enter`键，输入的是什么字符？
 
 ----
 # 学习笔记
-### 【预习】一个浏览器是如何工作的
+### 【预习】一个浏览器是如何工作的（对应第一节内容）
 渲染步骤：
 1. 使用HTTP或HTTPS协议向服务端请求内容
 2. 把请求来的HTML经过解析，构建成DOM树
@@ -31,30 +31,3 @@ telnet time.geekbang.org 80
 GET / HTTP/1.1
 Host: time.geekbang.org
 ```
-
-#### 解析HTML，构建DOM树
-
-**分词（token）**
-接受字符流，每次读取一个字符串，使用状态机每次决策，解析成想要的词。
-状态机有当前状态，每读入一个字符都去判断是否是当前状态，不是则跳转到其他状态。状态机就能将字符串分割成一个一个的词。
-
-**构建DOM树**
-使用栈，入栈，出栈
-
-- [ ] 写一个函数，分析HTML将其拆分成DOM树，[可参考](https://github.com/aimergenge/toy-html-parser)
-- [ ] 理解状态机
-
-
-### 剩下的3、4、5预习
-第三四五课预习对应第三四周的课程，后面再看
-
-### 1、浏览器工作原理总论
-
----
-
-[HTTP 协议中的 Transfer-Encoding](https://imququ.com/post/transfer-encoding-header-in-http.html)
-1、看HTTP模块教程，完成一个服务端https://nodejs.org/zh-cn/docs/guides/anatomy-of-an-http-transaction/
-2、了解异步执行、Permise、ansy、awit等知识
-3、编写发送请求的代码
-4、完成状态机的作业👌
-5、完成状态机选做作业
