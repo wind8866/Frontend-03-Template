@@ -3,7 +3,7 @@
 ----
 # 学习笔记
 ### 【预习】一个浏览器是如何工作的（对应阶段二、三内容）
-
+学习[toy-html-parser](https://github.com/aimergenge/toy-html-parser)代码
 #### 解析HTML，构建DOM树
 
 **分词（token）**
