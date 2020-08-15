@@ -26,6 +26,7 @@ http.createServer((request, response) => {
 <body>
     <div>
         <img src="pic.png" alt="pic"/>
+        <p>文本文本段落段落</p>
     </div>
 </body>
 </html>`);

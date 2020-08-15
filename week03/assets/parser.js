@@ -1,5 +1,4 @@
 const { error } = require("console");
-const nodeList = [];
 
 class Parser {
     constructor() {
@@ -8,10 +7,6 @@ class Parser {
         this.attrKey = '';
         this.attrValue = '';
         this.EOF = Symbol('EOF');
-        this.text = {
-            type: 'text',
-            value: '',
-        };
     }
     parserHTML(html) {
         console.log(html);
@@ -22,15 +17,16 @@ class Parser {
     }
     data(char) {
         if (char === '<') {
-            token(this.text);
-            this.text.value = '';
             return this.tagOpen;
         } else if (char === this.EOF) {
             console.log('结束');
-            console.log(nodeList);
+            console.log(stack);
             return false;
-        } 
-        this.text.value += char;
+        }
+        token({
+            type: 'text',
+            value: char,
+        });
         return this.data;
     }
     tagOpen(char) {
@@ -43,7 +39,7 @@ class Parser {
             }
         } else if (/^[a-zA-Z]$/.test(char)) {
             this.currentTag = {
-                type: 'tagStart',
+                type: 'startTag',
                 tagName: '',
                 attr: {}
             }
@@ -63,7 +59,7 @@ class Parser {
     tagClose(char) {
         if (/^[a-zA-Z]$/.test(char)) {
             this.currentTag = {
-                type: 'tagEnd',
+                type: 'endTag',
                 tagName: '',
             }
             return this.tagName(char);
@@ -108,8 +104,40 @@ class Parser {
         }
     }
 }
+const stack = [
+    {
+        type: 'document',
+        children: [],
+    }
+];
 function token(node) {
-    nodeList.push(node);
-    console.log(node);
+    if (node.type === 'text') {
+        console.log(node);
+        return;
+    }
+    let top = stack[stack.length - 1];
+    if (node.type === 'startTag' || node.type === 'selfCloseTag') {
+        const element = {
+            type: 'element',
+            children: [],
+            attributes: node.attr,
+            tagName: node.tagName,
+        };
+        top.children.push(element);
+        element.parent = top;
+
+        if (node.type === 'startTag') {
+            stack.push(element);
+        }
+    }
+    if (node.type === 'endTag') {
+        if (node.tagName === top.tagName) {
+            stack.pop();
+        } else {
+            throw new Error('标签不匹配');
+        }
+
+    }
+    console.log(node, stack);
 }
 module.exports = Parser;
