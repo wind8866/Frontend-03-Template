@@ -20,12 +20,12 @@ class Parser {
             return this.tagOpen;
         } else if (char === this.EOF) {
             console.log('结束');
-            console.log(stack);
+            token(null);
             return false;
         }
         token({
             type: 'text',
-            value: char,
+            content: char,
         });
         return this.data;
     }
@@ -110,13 +110,13 @@ const stack = [
         children: [],
     }
 ];
+let currentTextNode = null;
 function token(node) {
-    if (node.type === 'text') {
-        console.log(node);
-        return;
-    }
     let top = stack[stack.length - 1];
-    if (node.type === 'startTag' || node.type === 'selfCloseTag') {
+    if (node === null) {
+        console.log(stack);
+        return;
+    } else if (node.type === 'startTag' || node.type === 'selfCloseTag') {
         const element = {
             type: 'element',
             children: [],
@@ -129,14 +129,25 @@ function token(node) {
         if (node.type === 'startTag') {
             stack.push(element);
         }
-    }
-    if (node.type === 'endTag') {
+    } else if (node.type === 'endTag') {
         if (node.tagName === top.tagName) {
             stack.pop();
         } else {
             throw new Error('标签不匹配');
         }
 
+    } else if (node.type === 'text') {
+        if (currentTextNode === null) {
+            currentTextNode = {
+                type: 'text',
+                content: ''
+            };
+            top.children.push(currentTextNode);
+        }
+        currentTextNode.content += node.content;
+    }
+    if (node.type !== 'text') {
+        currentTextNode = null;
     }
     console.log(node, stack);
 }
