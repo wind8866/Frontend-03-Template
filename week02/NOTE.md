@@ -6,8 +6,8 @@
 - [ ] 学习ES6异步执行、Permise、ansy、awit等知识
 - [ ] 完成选做的作业
 - [ ] 优化代码，解决代码中的疑惑点
-- [ ] Transfer-Encoding请求头是做什么的？其他请求头的解析方式是什么样的呢？参考[HTTP 协议中的 Transfer-Encoding](https://imququ.com/post/transfer-encoding-header-in-http.html)
-- [ ] 换行符`\r`和`\n`有什么区别，不同系统中敲击`enter`键，输入的是什么字符？
+- [x] Transfer-Encoding请求头是做什么的？其他请求头的解析方式是什么样的呢？参考[HTTP 协议中的 Transfer-Encoding](https://imququ.com/post/transfer-encoding-header-in-http.html)
+- [x] 换行符`\r`和`\n`有什么区别，不同系统中敲击`enter`键，输入的是什么字符？
 
 ----
 # 学习笔记
@@ -31,3 +31,19 @@ telnet time.geekbang.org 80
 GET / HTTP/1.1
 Host: time.geekbang.org
 ```
+
+---
+# 问题解答
+### 换行符`\r`和`\n`有什么区别，不同系统中敲击`enter`键，输入的是什么字符？
+- Unix、Linux、macOS：`\n`
+- 旧版macOS：`\r`
+- windows: `\r\n`
+
+[回车](https://en.wikipedia.org/wiki/Carriage_return)：carriage return、简写CR，转义符`\r`，ASASCII为13，指将打印头移动到行首。
+[换行](https://en.wikipedia.org/wiki/Newline)：Newline、line feed，简写LF，转义符`\n`，ASASCII为10，指将打印头移动到下一行。
+
+[历史渊源](http://www.ruanyifeng.com/blog/2006/04/post_213.html)
+
+### Transfer-Encoding请求头是做什么的？其他请求头的解析方式是什么样的呢？
+参考[HTTP 协议中的 Transfer-Encoding](https://imququ.com/post/transfer-encoding-header-in-http.html)
+HTTP长连接出现之前，浏览器可以根据TPC连接关闭确定响应已经完成。长连接出现后浏览器可以根据HTTP Header中的字段确定body的长度，但是这种做法是同步产生，耗时。`Transfer-Encoding`的出现规定了一种chunked的方式，流式的处理**传输编码**（注意传输编码在内容编码Content-Encoding之后）。而chunked的方式就是一行单独的十六进制数值表示本次chunked的字符长度。这样就能实现分组传输。浏览器接收到长度值为零的字符长度时就可以确定传输完成。
