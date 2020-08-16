@@ -1,4 +1,5 @@
 const { error } = require("console");
+const css = require('css');
 
 class Parser {
     constructor() {
@@ -126,11 +127,15 @@ function token(node) {
         top.children.push(element);
         element.parent = top;
 
+        computeCSS(element);
         if (node.type === 'startTag') {
             stack.push(element);
         }
     } else if (node.type === 'endTag') {
         if (node.tagName === top.tagName) {
+            if (node.tagName === 'style') {
+                addCSSRules(top.children[0].content);
+            }
             stack.pop();
         } else {
             throw new Error('标签不匹配');
@@ -149,6 +154,125 @@ function token(node) {
     if (node.type !== 'text') {
         currentTextNode = null;
     }
-    console.log(node, stack);
+    // console.log(node, stack);
 }
+const rules = [];
+// 将CSS文本转化为对象
+function addCSSRules(styleText) {
+    console.log(styleText);
+    const ast = css.parse(styleText);
+    console.log(ast);
+    rules.push(...ast.stylesheet.rules);
+    console.log(rules)
+}
+
+function computeCSS(element){
+    // todo: 这里html被处理时，rules还没建立，导致html dom无法添加上css树
+    console.log(element, rules);
+    // todo: 这一步的目的是使DOM树从子到父顺序
+    const elements = stack.slice().reverse();
+    if (!element.computedStyle) {
+        element.computedStyle = {};
+    }
+
+    /**
+     * 遍历每条css规则
+     *  1、CSS规则分成选择器，倒序selectorParts = ['div', 'body', 'html']
+     *  2、如果当前element不与selectorParts[0]匹配，跳过本次循环
+     *  3、遍历当前dom栈(可能并不全)，例如[p.startTag, div.startTag, body.startTag, html.startTag]
+     *      如果selectorParts中的tag(body)被匹配到，匹配下一个
+     *  4、判断一共匹配个数如果selectorParts的值都被匹配，标记为改tag被匹配
+     *  5、将改style规则添加到改element上
+     */
+    for(let rule of rules) {
+        const selectorParts = rule.selectors[0].split(" ").reverse();
+        
+        // 匹配当前元素
+        if (!match(element, selectorParts[0])) {
+            continue;
+        }
+
+        let matched = false;
+        let j = 1;
+        for(let i = 0;i < elements.length && j < selectorParts.length; i++) {
+            if (match(elements[i], selectorParts[j])) {
+                j++;
+            }
+        }
+
+        if (j >= selectorParts.length) {
+            matched = true;
+        }
+        if (matched) {
+            const sp = specificity(rule.selectors[0]);
+            console.log('Element', element, 'rule', rule);
+            for (let declaration of rule.declarations) {
+                if (!element.computedStyle[declaration.property]) {
+                    element.computedStyle[declaration.property] = {};
+                }
+                const specificity = element.computedStyle[declaration.property].specificity;
+                if (!specificity) {
+                    element.computedStyle[declaration.property].value = declaration.value;
+                    element.computedStyle[declaration.property].specificity = sp;   
+                } else if(compare(sp, specificity) >= 0) {
+                    element.computedStyle[declaration.property].value = declaration.value;
+                    element.computedStyle[declaration.property].specificity = sp;  
+                }
+            }
+            console.log(element.computedStyle);
+        }
+    }
+}
+
+function specificity(selector) {
+    const p = [0, 0, 0, 0];
+    const selectorParts = selector.split(' ');
+    for (const part of selectorParts) {
+        if(part[0] === '#') {
+            p[1]++;
+        } else if (part[0] === '.') {
+            p[2]++;
+        } else {
+            p[3]++;
+        }
+    }
+    return p;
+}
+
+function compare (p1, p2) {
+    if (p1[0] !== p2[0]) {
+        return p1[0] - p2[0];
+    } else if (p1[1] !== p2[1]) {
+        return p1[1] - p2[1];
+    } else if (p1[2] !== p2[2]) {
+        return p1[2] - p2[2];
+    } else {
+        return p1[3] - p2[3];
+    }
+}
+
+function match(element, selector) {
+    let checked = false;
+    // #id .class tagname
+    if (!selector || !element.attributes) {
+        return false;
+    }
+    if (element.attributes.id) {
+        const idList = element.attributes.id.split(' ');
+        if (idList.some(id => `#{id}` === selector)) {
+            checked = true;
+        }
+    }
+    if (element.attributes.class) {
+        const classList = element.attributes.class.split(' ');
+        if (classList.some(id => `.{id}` === selector)) {
+            checked = true;
+        }
+    }
+    if (element.tagName === selector) {
+        checked = true;
+    }
+    return checked;
+}
+ 
 module.exports = Parser;

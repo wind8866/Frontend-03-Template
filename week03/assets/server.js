@@ -18,8 +18,15 @@ http.createServer((request, response) => {
         response.end(`<html lang="en">
 <head>
     <style>
-        div {
+        body div {
             color: #ffa;
+        }
+        div p {
+            font-size: 16px;
+            color: #fff;
+        }
+        p {
+            color: #333;
         }
     </style>
 </head>
