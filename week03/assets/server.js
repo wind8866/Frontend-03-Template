@@ -28,11 +28,14 @@ http.createServer((request, response) => {
         p {
             color: #333;
         }
+        div img.pic#logo.logo-main {
+            width: 200px;
+        }
     </style>
 </head>
 <body>
     <div>
-        <img src="pic.png" alt="pic"/>
+        <img id="logo" class="pic logo" src="pic.png" alt="pic"/>
         <p>文本文本段落段落</p>
     </div>
 </body>

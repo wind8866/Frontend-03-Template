@@ -169,7 +169,7 @@ function addCSSRules(styleText) {
 function computeCSS(element){
     // todo: 这里html被处理时，rules还没建立，导致html dom无法添加上css树
     console.log(element, rules);
-    // todo: 这一步的目的是使DOM树从子到父顺序
+    // 这一步的目的是使DOM树从子到父顺序
     const elements = stack.slice().reverse();
     if (!element.computedStyle) {
         element.computedStyle = {};
@@ -226,7 +226,13 @@ function computeCSS(element){
 
 function specificity(selector) {
     const p = [0, 0, 0, 0];
-    const selectorParts = selector.split(' ');
+    const selectorParts = [];
+    selector.split(' ').forEach(selectorGroup => {
+        const idSelector = selectorGroup.match(/\#[a-zA-Z]+/) || [];
+        const classSelector = selectorGroup.match(/\.[a-zA-Z]+/g) || [];
+        const tagSelector = selectorGroup.match(/^[a-zA-Z]+/) || [];
+        selectorParts.push(...idSelector, ...classSelector, ...tagSelector);
+    })
     for (const part of selectorParts) {
         if(part[0] === '#') {
             p[1]++;
@@ -262,9 +268,9 @@ function match(element, selector) {
      *  最多只能有一个tagName
      *  HTML的id属性不可设置多个
      */
-    const idSelector = selector.match(/\#[a-zA-Z]+/);
-    const classSelector = selector.match(/\.[a-zA-Z]+/g);
-    const tagSelector = selector.match(/^[a-zA-Z]+/);
+    const idSelector = selector.match(/\#[a-zA-Z]+/) || [];
+    const classSelector = selector.match(/\.[a-zA-Z]+/g) || [];
+    const tagSelector = selector.match(/^[a-zA-Z]+/) || [];
     let matchedCount = 0;
 
     if (element.attributes.id) {
