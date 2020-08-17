@@ -253,26 +253,45 @@ function compare (p1, p2) {
 
 function match(element, selector) {
     let checked = false;
-    // #id .class tagname
     if (!selector || !element.attributes) {
         return false;
     }
+
+    /**
+     * 规则：
+     *  最多只能有一个tagName
+     *  HTML的id属性不可设置多个
+     */
+    const idSelector = selector.match(/\#[a-zA-Z]+/);
+    const classSelector = selector.match(/\.[a-zA-Z]+/g);
+    const tagSelector = selector.match(/^[a-zA-Z]+/);
+    let matchedCount = 0;
+
     if (element.attributes.id) {
-        const idList = element.attributes.id.split(' ');
-        if (idList.some(id => `#{id}` === selector)) {
-            checked = true;
+        if (idSelector[0] === '#' + element.attributes.id) {
+            matchedCount++;
         }
     }
     if (element.attributes.class) {
         const classList = element.attributes.class.split(' ');
-        if (classList.some(id => `.{id}` === selector)) {
-            checked = true;
-        }
+        classList.forEach(className => {
+            if (classSelector.includes('.' + className)) {
+                matchedCount++;
+            }
+        })
     }
-    if (element.tagName === selector) {
-        checked = true;
+    if (element.tagName === tagSelector[0]) {
+        matchedCount++;
     }
-    return checked;
+    return idSelector.length + classSelector.length + tagSelector.length <= matchedCount;
 }
+// const selected = match({
+//     attributes: {
+//         class: 'a link button',
+//         id: 'more',
+//     },
+//     tagName: 'a',
+// }, 'a.link#more.button');
+// console.log(selected);
  
 module.exports = Parser;
