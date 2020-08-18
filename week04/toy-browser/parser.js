@@ -1,5 +1,6 @@
 const { error } = require("console");
 const css = require('css');
+const layout = require('./layout');
 
 class Parser {
     constructor() {
@@ -136,6 +137,7 @@ function token(node) {
             if (node.tagName === 'style') {
                 addCSSRules(top.children[0].content);
             }
+            layout(top);
             stack.pop();
         } else {
             throw new Error('标签不匹配');
