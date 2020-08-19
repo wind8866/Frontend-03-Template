@@ -1,33 +1,43 @@
 
-// 预处理
+// 样式属性预处理
 function getStyle(element) {
+    // style对象存储计算出的样式对象，用于排版使用
     if(!element.style) {
         element.style = {};
     }
-    // todo: 
-    for(let prop in element.computedStyle) {
+    
+    // 将属性处理后赋值给element.style
+    for(const prop in element.computedStyle) {
         const p = element.computedStyle.value;
         element.style[prop] = element.computedStyle[prop].value;
 
+        // 以px结尾的都转换为整数
         if(element.style[prop].toString().match(/px$/)) {
             element.style[prop] = parseInt(element.style[prop])
         }
+        // 以数字开头的都转换为整数
         if(element.style[prop].toString().match(/^[0-9\.]+$/)) {
             element.style[prop] = parseInt(element.style[prop])
         }
     }
+
+    return element.style;
 }
 
 function layout(element) {
+    // 没有属性值的跳过
     if(!element.computedStyle) {
         return;
     }
     const elementStyle = getStyle(element);
+    // 跳过非flex布局的元素
     if(elementStyle.display !== 'flex') {
         return;
     }
-    const items = element.children.filter(e => e.type === 'elem');
+    // 过滤flex布局的子元素，把文本节点全部过滤出去
+    const items = element.children.filter(e => e.type === 'element');
 
+    // todo: style.order排序？
     items.sort((a, b) => {
         return (a.order || 0) = (b.order || 0);
     });
@@ -38,7 +48,7 @@ function layout(element) {
         if (style[size] === 'auto' || style[size] === '') {
             style[size] = null;
         }
-    })
+    });
 
     // 设置默认值
     // 主轴方向: 横向
@@ -63,16 +73,17 @@ function layout(element) {
     }
 
     // 
-    let mainSize,
-        mainStart,
-        mainEnd,
-        mainSign,
-        mainBase,
-        crossSize,
-        crossStart,
-        crossEnd,
-        crossSign,
-        crossBase;
+    let mainSize,// 主轴尺寸
+        mainStart,// 主轴开始的位置:left right top bottom
+        mainEnd,// 主轴结束的位置:left right top bottom
+        mainSign,// todo: 好像是主轴里的元素方向
+        mainBase,// todo: 初始值
+        
+        crossSize,// 交叉轴尺寸
+        crossStart,// 交叉轴的位置:left right top bottom
+        crossEnd,// 交叉轴结束的位置:left right top bottom
+        crossSign,// todo:
+        crossBase;// todo:
 
     if (style.flexDirection === 'row') {
         mainSize = 'width';
@@ -118,8 +129,10 @@ function layout(element) {
         crossStart = 'left';
         crossEnd = 'right'; 
     }
+
+    // 换行
     if (style.flexWrap = 'wrap-reverse') {
-        let tmp = crossStart;
+        const tmp = crossStart;
         crossStart = crossEnd;
         crossEnd = tmp;
         crossSign = -1;

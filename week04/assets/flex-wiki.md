@@ -1,0 +1,77 @@
+## flex布局
+启用flex布局的方式是在包含元素上设置`display: flex;`或`display: inline-flex;`。
+包含元素的可选属性如下：
+
+- flex-direction
+	- 主轴方向
+	- 默认值：row
+	- 可选值：
+		- row：主轴为水平方向，起点在左端。
+		- row-reverse：主轴为水平方向，起点在右端。
+		- column：主轴为垂直方向，起点在上沿。
+		- column-reverse：主轴为垂直方向，起点在下沿。
+- flex-wrap
+	- 是否换行
+	- 默认值：nowrap
+	- 可选值：
+		- nowrap：不换行
+		- wrap：换行
+		- wrap-reverse：换行，第一行在下方
+- flex-flow
+	- flex-direction属性和flex-wrap属性的简写形式
+- justify-content
+	- 主轴方向上元素对齐方式
+	- 默认值：flex-start
+	- 可选值：
+		- flex-start：主轴起点
+		- flex-end：主轴终点
+		- center：居中对齐
+		- space-between：两端对其，项目间隔相等
+		- space-around：每个项目两侧间隔相等（项目之间的间隔比项目大一倍）
+- align-items
+	- 交叉轴方向上元素对齐方式
+	- 默认值：stretch
+	- 可选值：
+		- flex-start：交叉轴起点
+		- flex-end：交叉轴终点
+		- center：交叉轴中点
+		- baseline：项目第一行文字的基线
+		- stretch：如果项目未设置高度，则会从起点到终点占满屏幕
+- align-content
+	- 多根轴线的对齐方式
+	- 默认值：stretch
+	- 可选值：
+		- flex-start：交叉轴起点
+		- flex-end：交叉轴终点
+		- center：交叉轴中点
+		- space-between：交叉轴两端对其，项目间隔相等
+		- space-around：每根轴线两侧间隔相等（项目之间的间隔比项目大一倍）
+		- stretch：轴线占满整个交叉轴。
+
+子项目上的可设置属性如下：
+- order
+	- 排序
+	- 默认值：0
+	- 值越小，排名越靠前
+- flex-grow
+	- 元素的放大比例
+	- 默认值：0
+	- 0为存在剩余空间，也不放大
+	- 如果所有项目的flex-grow属性都为1，则它们将等分剩余空间（如果有的话）。如果一个项目的flex-grow属性为2，其他项目都为1，则前者占据的剩余空间将比其他项多一倍。
+- flex-shrink
+	- 元素的缩小比例
+	- 默认值：1
+	- 0为存在空间不足，也不缩小
+	- 如果所有项目的flex-shrink属性都为1，当空间不足时，都将等比例缩小。如果一个项目的flex-shrink属性为0，其他项目都为1，则空间不足时，前者不缩小。
+- flex-basis
+	- 在分配多余空间之前，项目占据的主轴空间
+	- 默认值：auto
+	- 浏览器根据这个属性，计算主轴是否有多余空间
+- flex
+	- 简写语法：放大比例 缩小比例 占主轴空间
+	- `flex: flex-grow flex-shrink flex-basis`
+	- 默认值：0 1 auto
+- align-self
+	- 允许和其他元素的对齐方式不一样
+	- 默认值：auto
+	- 可选值与align-items一样：auto flex-start flex-end center baseline stretch
