@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>match</title>
+</head>
+<body>
+编写一个match函数，接受选择器字符串和dom，返回两者是否匹配
+说明：
+- 支持：标签选择器、类选择器、ID选择器、星号选择器
+- 不支持：伪类选择器、伪元素选择器、属性选择器
+- 不支持逗号分隔符
+- 组合选择器只支持后代选择器（空格）
+<div class="wrap">
+    <div id="id1" class="class1"></div>
+</div>
+<script>
+function match(selector, element) {
+    let selectorList = selector.split(' ').reverse();
+    selectorList = selectorList.map(selectorText => {
+        const idSelector = selector.match(/\#[a-zA-Z]+/) || [];
+        const classSelector = selector.match(/\.[a-zA-Z]+/g) || [];
+        const tagSelector = selector.match(/^[a-zA-Z]+/) || [];
+        const allSelector = selector.match(/^[*]+/) || [];
+        
+        return {
+            idSelector,
+            classSelector,
+            tagSelector,
+            allSelector,
+        };
+    });
+    let selectorIndex = 0;
+    let thisNode = element;
+    for (const selector of selectorList) {
+        ++selectorIndex;
+        const {
+            idSelector,
+            classSelector,
+            tagSelector,
+            allSelector,
+        } = selector;
+        
+        // 实际匹配的个数
+        let matchedCount = 0;
+        // 一共需要匹配的个数
+        const selectorCount = idSelector.length + classSelector.length + tagSelector.length + allSelector.length;
+
+        const matchThisNode = () => {
+            if (thisNode.attributes.id) {
+                if (idSelector[0] === '#' + thisNode.attributes.id) {
+                    matchedCount++;
+                }
+            }
+            if (thisNode.attributes.class) {
+                thisNode.classList.forEach(className => {
+                    if (classSelector.includes('.' + className)) {
+                        matchedCount++;
+                    }
+                })
+            }
+            if (thisNode.tagName === tagSelector[0]) {
+                matchedCount++;
+            }
+            // 通用选择器会始终匹配当前元素
+            matchedCount += allSelector.length;
+
+            // 如果dom节点向上查找已经到达html了
+            if (thisNode.tagName.toLocaleLowerCase() === 'html') {
+                if (selectorIndex === selectorList.length) {
+                    // 选择器已经遍历完，当前元素决定是不是匹配的
+                    return matchedCount >= selectorCount;
+                } else {
+                    // 选择器还没遍历完，说明没有完全匹配
+                    return false;
+                }
+            }
+            // 如果当前节点没有匹配上，向父级移动，再次匹配
+            if (matchedCount < selectorCount) {
+                thisNode = thisNode.parentNode;
+                return matchThisNode();
+            } else {
+                thisNode = thisNode.parentNode;
+            }
+        }
+        matchThisNode(thisNode);
+    }
+    // 如果已经遍历完成，说明都已经匹配成功
+    return true;
+}
+
+match('div #id1.class1', document.getElementById('id1'));
+// match('div * .class1', document.getElementById('id'));
+</script>
+</body>
+</html>
