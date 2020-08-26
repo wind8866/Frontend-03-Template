@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .line-clamp {
+        width: 300px;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+    }
+
+    .active:active {
+        color: red;
+    }
+</style>
+
+<body>
+    <div class="line-clamp">
+        In this example the <code>-webkit-line-clamp</code> property is set to <code>3</code>, which means the text is
+        clamped after three lines.
+        An ellipsis will be shown at the point where the text is clamped.
+    </div>
+    <div class="active">
+        active
+    </div>
+
+
+    <div class="all-wrap">
+        <blockquote>
+            没有设置：
+            1、该元素的默认属性保留；
+            2、font-size、color会继承；
+        </blockquote>
+        <blockquote class="set-style">
+            默认的：
+            1、该元素的默认属性保留；
+            2、font-size、color会继承；
+            3、background-color和border会设置；
+        </blockquote>
+        <blockquote class="set-style" id="unset">
+            unset：
+            1、该元素的默认属性重置；
+            2、font-size、color会继承；
+            3、background-color和border会设置成默认
+        </blockquote>
+        <blockquote class="set-style" id="inherit">
+            unset：
+            1、该元素的默认属性重置；
+            2、all-wrap的所有属性都会继承；
+        </blockquote>
+    </div>
+    <style>
+        .all-wrap {
+            font-size: small;
+            background-color: #F0F0F0;
+            color: blue;
+            border: 1px solid #666;
+        }
+
+        .set-style {
+            background-color: skyblue;
+            color: red;
+        }
+
+        #unset {
+            all: unset;
+        }
+
+        #inherit {
+            all: inherit;
+        }
+    </style>
+
+
+    <p id="p1">This is a test paragraph.</p>
+    <input type="button" onclick="setPageBreak()" value="Set page-break" />
+    <p>This is also a test paragraph.</p>
+    <script type="text/javascript">
+        function setPageBreak() {
+            document.getElementById("p1").style.pageBreakAfter = "always";
+        }
+    </script>
+    <p>你好这里是测试行高，你好这里是测试行高，你好这里是测试行高，你好这里是测试行高，你好这里是测试行高，你好这里是测试行高，你好这里是测试行高，你好这里是测试行高，你好这里是测试行高，你好这里是测试行高，你好这里是测试行高，</p>
+</body>
+
+</html>

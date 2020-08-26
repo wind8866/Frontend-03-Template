@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script>
+
+const docEl = document.documentElement
+function setRemUnit () {
+    var rem = docEl.clientWidth / 10
+    docEl.style.fontSize = rem + 'px'
+}
+window.addEventListener('resize', setRemUnit);
+window.addEventListener('load', function (e) {
+    setRemUnit()
+})
+</script>
+<div class="box1">16像素大小</div>
+<div class="box2">16像素大小</div>
+<style>
+    * {margin: 0;padding: 0;}
+    .box1 {
+        /* 50% */
+        width: 5rem;
+        height: 5rem;
+        background: #55a;
+        /* 16 / (375 / 10) */
+        font-size: 0.43rem;
+        color: #fff;
+    }
+    .box2 {
+        /* 50% */
+        width: 50vw;
+        height: 50vw;
+        background: #5a5;
+        /*  */
+        font-size: 4.27vw;
+        color: #fff;
+    }
+</style>
+</body>
+</html>

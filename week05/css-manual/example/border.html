@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <title>Document</title>
+</head>
+<body>
+    <div class="box1-wrap">
+        <div class="box1 box1-1"></div>
+        <div class="box1 box1-2"></div>
+    </div>
+    <style>
+        .box1-wrap {
+            display: flex;
+        }
+        .box1 {
+            width: 400px;
+            height: 500px;
+            margin-right: 20px;
+        }
+        .box1-1 {
+            border-bottom: 1px solid #000;
+        }
+        @media only screen and (-webkit-min-device-pixel-ratio:2){
+            .box1-2 {
+                border-bottom: none;
+                border-width: 0 0 1px 0;
+                border-image: url(../img/1pxline.png) 0 0 2 0 stretch;
+            }
+        }
+    </style>
+</body>
+</html>

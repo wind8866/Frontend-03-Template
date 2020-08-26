@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>animation</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="box1 box">none</div>
+        <div class="box2 box">forwards</div>
+        <div class="box3 box">backwards</div>
+        <div class="box4 box">both</div>
+    </div>
+    <style>
+        .wrap {
+            width: 500px;
+            background: #99d;
+        }
+        .box {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            background: #494;
+            font-size: 26px;
+            text-align: center;
+            line-height: 100px;
+            outline: 1px dashed #fff;
+        }
+        .box1 {
+            animation: m-box1 5s linear 2s alternate 2 none;
+        }
+        .box2 {
+            animation: m-box1 5s linear 2s alternate 2 forwards;
+        }
+        .box3 {
+            animation: m-box1 5s linear 2s alternate 2 backwards;
+        }
+        .box4 {
+            animation: m-box1 5s linear 2s alternate 2 both;
+        }
+
+        @keyframes m-box1 {
+            from {
+                left: 0;
+                background: #dd0;
+            }
+
+            to {
+                left: 400px;
+                background: #d0d;
+            }
+        }
+    </style>
+</body>
+
+</html>
