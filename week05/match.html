@@ -13,16 +13,16 @@
 - 不支持逗号分隔符
 - 组合选择器只支持后代选择器（空格）
 <div class="wrap">
-    <div id="id1" class="class1"></div>
+    <p id="id1" class="class-1"></p>
 </div>
 <script>
 function match(selector, element) {
     let selectorList = selector.split(' ').reverse();
     selectorList = selectorList.map(selectorText => {
-        const idSelector = selector.match(/\#[a-zA-Z]+/) || [];
-        const classSelector = selector.match(/\.[a-zA-Z]+/g) || [];
-        const tagSelector = selector.match(/^[a-zA-Z]+/) || [];
-        const allSelector = selector.match(/^[*]+/) || [];
+        const idSelector = selectorText.match(/\#[a-zA-Z]+[a-zA-Z0-9\-]*/) || [];
+        const classSelector = selectorText.match(/\.[a-zA-Z]+[a-zA-Z0-9\-]*/g) || [];
+        const tagSelector = selectorText.match(/^[a-zA-Z]+/) || [];
+        const allSelector = selectorText.match(/^[*]+/) || [];
         
         return {
             idSelector,
@@ -33,6 +33,7 @@ function match(selector, element) {
     });
     let selectorIndex = 0;
     let thisNode = element;
+    let targetSelector;
     for (const selector of selectorList) {
         ++selectorIndex;
         const {
@@ -48,50 +49,47 @@ function match(selector, element) {
         const selectorCount = idSelector.length + classSelector.length + tagSelector.length + allSelector.length;
 
         const matchThisNode = () => {
-            if (thisNode.attributes.id) {
-                if (idSelector[0] === '#' + thisNode.attributes.id) {
+            if (idSelector[0] === '#' + thisNode.id) {
+                matchedCount++;
+            }
+            thisNode.classList.forEach(className => {
+                if (classSelector.includes('.' + className)) {
                     matchedCount++;
                 }
-            }
-            if (thisNode.attributes.class) {
-                thisNode.classList.forEach(className => {
-                    if (classSelector.includes('.' + className)) {
-                        matchedCount++;
-                    }
-                })
-            }
-            if (thisNode.tagName === tagSelector[0]) {
+            })
+            if (thisNode.tagName.toLocaleLowerCase() === tagSelector[0]) {
                 matchedCount++;
             }
             // 通用选择器会始终匹配当前元素
             matchedCount += allSelector.length;
 
-            // 如果dom节点向上查找已经到达html了
-            if (thisNode.tagName.toLocaleLowerCase() === 'html') {
-                if (selectorIndex === selectorList.length) {
-                    // 选择器已经遍历完，当前元素决定是不是匹配的
-                    return matchedCount >= selectorCount;
-                } else {
-                    // 选择器还没遍历完，说明没有完全匹配
-                    return false;
-                }
+            // 如果最后一个已匹配
+            if (selectorIndex === selectorList.length && matchedCount >= selectorCount) {
+                return true;
             }
+
+            // 如果dom节点向上查找已经到达html了，选择器还没遍历完，说明没有完全匹配
+            if (thisNode.tagName.toLocaleLowerCase() === 'html') {
+                return false;
+            }
+            
             // 如果当前节点没有匹配上，向父级移动，再次匹配
             if (matchedCount < selectorCount) {
                 thisNode = thisNode.parentNode;
                 return matchThisNode();
             } else {
+                // 如果匹配上了，使用使用父元素和下一个选择器再次进行匹配
                 thisNode = thisNode.parentNode;
             }
         }
-        matchThisNode(thisNode);
+        targetSelector = matchThisNode(thisNode)
     }
     // 如果已经遍历完成，说明都已经匹配成功
-    return true;
+    return targetSelector;
 }
 
-match('div #id1.class1', document.getElementById('id1'));
-// match('div * .class1', document.getElementById('id'));
+// todo: 在原有基础上支持简单的属性选择器
+console.log(match('* p#id1.class-2', document.getElementById('id1')));
 </script>
 </body>
 </html>
