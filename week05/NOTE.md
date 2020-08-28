@@ -1,18 +1,16 @@
-# 任务
-- [x] 完成课程
-- [ ] 完成作业
-- [ ] 完成根据MDN整理的CSS分类
+# 作业
+#### 作业一：编写一个match函数，接受选择器字符串和dom，返回两者是否匹配
+在文件[./match.html](./match.html)
+
+#### 作业二：为什么 first-letter 可以设置 float 之类的，而 first-line 不行呢？（提交至 GitHub）
+因为`first-letter`伪元素实现时可以作为一个dom节点处理，dom节点内的内容是确定的。但是`first-line`内的文本是不固定的，假如设置了`float`或`position`属性，会脱离文档流，脱离了整个段落也就不能作为段落的第一行。逻辑是矛盾的，所以不能设置float。
 
 
-计划：
-- [x] 周天：看完两节课程（实际至三节）
-- [x] 周一：完成第四节的实验工具（实际完成至六节）
-- [x] 周二：完成本周剩余课程
-- [ ] 周三：完成本周作业
-- [ ] 周四：
-- [ ] 周五：完成所有作业并提交
+# 周总结
+
 ---
-
+# 笔记
+## 遍历文档的爬虫
 ```javascript
 const domList = Array.prototype.slice.call(document.querySelector('#container').children);
 const cssTagDomList = domList.filter(e => e.getAttribute('data-tag').match(/css/));
@@ -97,6 +95,9 @@ s = 2000001000001
 
 破坏回溯原则的性能上会有一些影响
 
+一旦使用`link`或`visited`之后，再也没有办法更改颜色之外的属性。
+layout变化了之后就能通过JS获取链接是否被访问过
+
 ### 逻辑型
 - `:not`
 - `:where` `:has`等css4
@@ -107,31 +108,18 @@ s = 2000001000001
 - `::first-line`: 第一行
 - `::first-letter`: 第一个文字
 
-### 思考题
-为什么 first-letter 可以设置 float 之类的，而 first-line 不行呢？（提交至 GitHub）
+---
 
-- [ ] 完成思考题
-
-因为`first-letter`伪元素实现时可以作为一个dom节点处理，dom节点内的内容是确定的。但是`first-line`内的文本是不固定的，假如设置了`float`或`position`属性，会脱离文档流，脱离了整个段落也就不能作为段落的第一行。所以逻辑是矛盾的。
-
-
-- [ ] 作业：编写一个match函数，接受选择器字符串和dom，返回两者是否匹配
-
-```javascript
-function match(selector, element) {
-    return true;
-}
-
-match('div #id.class', document.getElementById('id'))
-```
-
-
-一旦使用`link`或`visited`之后，再也没有办法更改颜色之外的属性。
-layout变化了之后就能通过JS获取链接是否被访问过
-
-
-
-
-# 学习笔记
-从语法版本出发
+# 本周任务
+- [x] 完成课程
+- [x] 完成作业
+- [ ] 完成根据MDN整理的CSS分类
+计划：
+- [x] 周天：看完两节课程（实际至三节）
+- [x] 周一：完成第四节的实验工具（实际完成至六节）
+- [x] 周二：完成本周剩余课程
+- [ ] 周三：完成本周作业【未完成】
+- [x] 周五：完成所有作业并提交
+- [x] 周末：整理css-manual中的选择器部分
+---
 
