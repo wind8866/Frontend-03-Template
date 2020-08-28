@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="html" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +17,7 @@
 </div>
 <script>
 function match(selector, element) {
+
     let selectorList = selector.split(' ').reverse();
     selectorList = selectorList.map(selectorText => {
         const idSelector = selectorText.match(/\#[a-zA-Z]+[a-zA-Z0-9\-]*/) || [];
@@ -48,7 +49,7 @@ function match(selector, element) {
         // 一共需要匹配的个数
         const selectorCount = idSelector.length + classSelector.length + tagSelector.length + allSelector.length;
 
-        const matchThisNode = () => {
+        do {
             if (idSelector[0] === '#' + thisNode.id) {
                 matchedCount++;
             }
@@ -63,7 +64,7 @@ function match(selector, element) {
             // 通用选择器会始终匹配当前元素
             matchedCount += allSelector.length;
 
-            // 如果最后一个已匹配
+            // 如果最后一个已匹配，则所有的都已匹配
             if (selectorIndex === selectorList.length && matchedCount >= selectorCount) {
                 return true;
             }
@@ -76,20 +77,19 @@ function match(selector, element) {
             // 如果当前节点没有匹配上，向父级移动，再次匹配
             if (matchedCount < selectorCount) {
                 thisNode = thisNode.parentNode;
-                return matchThisNode();
             } else {
                 // 如果匹配上了，使用使用父元素和下一个选择器再次进行匹配
                 thisNode = thisNode.parentNode;
+                break;
             }
-        }
-        targetSelector = matchThisNode(thisNode)
+        } while(true);
     }
     // 如果已经遍历完成，说明都已经匹配成功
-    return targetSelector;
+    return true;
 }
 
 // todo: 在原有基础上支持简单的属性选择器
-console.log(match('* p#id1.class-2', document.getElementById('id1')));
+console.log(match('.html *#id1.class-1', document.getElementById('id1')));
 </script>
 </body>
 </html>
