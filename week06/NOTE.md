@@ -44,3 +44,11 @@ float
 clear其实不是影响别人，而是影响自身，使自己的某一侧不能有浮动使。
 
 ## BFC合并
+- Block Container: 里面有BFC的，能容纳正常流的盒，里面就有BFC。
+- Block-level Box: 外面有BFC的
+- Block Box = Block Container + Block-level Box：里外都有BFC的
+
+
+## 
+
+
