@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event</title>
+    <style>
+        #wrap {
+            width: 400px;
+            height: 400px;
+            background-color: #aef;
+        }
+        #inner {
+            width: 200px;
+            height: 200px;
+            background-color: #afe;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">a
+    <div id="inner">b</div>
+</div>
+<script>
+const wrap = document.querySelector('#wrap')
+const inner = document.querySelector('#inner')
+
+wrap.addEventListener('click', event => console.log('wrap'))
+inner.addEventListener('click', event => console.log('inner'))
+wrap.addEventListener('click', event => console.log('wrap1'), true)
+inner.addEventListener('click', event => console.log('inner1'), true)
+wrap.addEventListener('click', event => console.log('wrap2'))
+// 为什么捕获先于冒泡触发
+</script>
+</body>
+</html>
