@@ -22,7 +22,7 @@ console.log(targetList);
 ```
 
 ## 选择器
-### 简单选择器
+### 简单选择器（simple）
 - 星号选择器：`*`
 - 标签选择器：`div` `svg|a`
 - 类选择器：`.class`
@@ -35,7 +35,7 @@ console.log(targetList);
 - <简单选择器><简单选择器><简单选择器>
 - 星号选择器和标签选择器必须在最前，伪类伪元素必须在最后
 
-### 复杂选择器
+### 复杂选择器（combinator）
 - 后代选择器：`.title h1`
 - 父子选择器：`ul>li`
 - 后续选择器：`.fist-post~div`
