@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>window API</title>
+</head>
+<body>
+<script>
+console.log(window)
+
+function filterOut(name, props) {
+    let set = new Set();
+    props.forEach(o, set.add(o))
+    return names.filter(e => !set.has(e));
+}
+
+let names = Object.getOwnPropertyNames(window);
+
+console.log(names.length)
+
+// ECMA 262
+{
+    let ecma = new Set();
+    let objects = ['globalThis', "Object", "Function", "Array", "Number", "parseFloat", "parseInt", "NaN", "undefined", "Boolean", "String", "Infinity", "Symbol", "Date", "Promise", "RegExp", "Error", "EvalError", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "JSON", "Math", "console", "Intl", "ArrayBuffer", "Uint8Array", "Int8Array", "Uint16Array", "Int16Array", "Uint32Array", "Int32Array", "Float32Array", "Float64Array", "Uint8ClampedArray", "BigUint64Array", "BigInt64Array", "DataView", "Map", "BigInt", "Set",
+                "WeakMap", "WeakSet", "Proxy", "Reflect", "decodeURI", "decodeURIComponent", "encodeURI", "encodeURIComponent", "escape", "unescape", "eval", "isFinite", "isNaN"];
+    objects.forEach(o => ecma.add(o));
+    names = names.filter(e => !ecma.has(e));
+}
+console.log(names.length)
+ 
+// Node
+names = names.filter(e => {
+    try {
+        return !(window[e].prototype instanceof Node)
+    } catch (err) {
+        return true;
+    }
+}).filter(e => e !== 'Node');
+console.log(names.length)
+
+// Events
+names = names.filter(e => !e.match(/^on/))
+console.log(names.length);
+
+// webkit private
+names = names.filter(e => !e.match(/^webkit/))
+console.log(names.length)
+
+// webaudio
+{
+    let objects = ["WaveShaperNode", "StereoPannerNode", "ScriptProcessorNode", "PannerNode", "OscillatorNode", "AudioContext", "ChannelSplitterNode", "ChannelMergerNode", "ChannelSplitterNode", "ConstantSourceNode", "ConvolverNode",
+                "BaseAudioContext", "OfflineAudioContext", "AudioBuffer", "AudioNode", "AudioParam", "AudioScheduledSourceNode", "AnalyserNode", "PeriodicWave", "AudioContext",
+                "OfflineAudioCompletionEvent", "IIRFilterNode", "AudioParamMap", "AudioListener", "AudioDestinationNode", "AudioBufferSourceNode",
+                "GainNode", "DynamicsCompressorNode", "DelayNode", "ConvolverNode", "ConstantSourceNode", "BiquadFilterNode", "DelayNode", "AudioWorkletNode", "AudioProcessingEvent"]
+            
+}
+
+
+console.log(names)
+
+</script>
+</body>
+</html>
