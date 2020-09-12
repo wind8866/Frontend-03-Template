@@ -1,6 +1,9 @@
+# 作业
+文件在[./css.xmind](./css.xmind)，注意有四个画布，作业在第二个。
+
+---
+
 学习笔记
-
-
 ## CSS排版盒模型
 标签Tag、元素Element、盒Box
 
@@ -22,7 +25,7 @@ CSS选择器选中的【元素】，在排版时可能产生多个【盒】。
 `box-sizing`的`content-box`影响`content`，`border-content`影响`border + padding + content`
  
 ## 正常流
-**老师把胡子刮了**
+*老师把胡子刮了*
 `inline-box`行内盒，IFC（行内级格式化上下文）
 `block-level-box`块级盒，BFC（块级格式化上下文）
 
