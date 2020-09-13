@@ -27,7 +27,6 @@ console.log(names.length)
     objects.forEach(o => ecma.add(o));
     names = names.filter(e => !ecma.has(e));
 }
-console.log(names.length)
  
 // Node
 names = names.filter(e => {
@@ -37,7 +36,6 @@ names = names.filter(e => {
         return true;
     }
 }).filter(e => e !== 'Node');
-console.log(names.length)
 
 // Events
 names = names.filter(e => !e.match(/^on/))
@@ -45,9 +43,8 @@ console.log(names.length);
 
 // webkit private
 names = names.filter(e => !e.match(/^webkit/))
-console.log(names.length)
 
-// webaudio
+// web audio
 {
     let objects = ["WaveShaperNode", "StereoPannerNode", "ScriptProcessorNode", "PannerNode", "OscillatorNode", "AudioContext", "ChannelSplitterNode", "ChannelMergerNode", "ChannelSplitterNode", "ConstantSourceNode", "ConvolverNode",
                 "BaseAudioContext", "OfflineAudioContext", "AudioBuffer", "AudioNode", "AudioParam", "AudioScheduledSourceNode", "AnalyserNode", "PeriodicWave", "AudioContext",
@@ -55,6 +52,86 @@ console.log(names.length)
                 "GainNode", "DynamicsCompressorNode", "DelayNode", "ConvolverNode", "ConstantSourceNode", "BiquadFilterNode", "DelayNode", "AudioWorkletNode", "AudioProcessingEvent"]
             
 }
+
+// whatwg  
+names = filterOut(names, ["TextDecoder", "TextEncoder", "TextDecoderStream", "TextEncoderStream"]);
+        
+// Streams 
+names = filterOut(names, ["ReadableStream", "ReadableStreamDefaultReader", "ReadableStreamBYOBReader", "ReadableStreamDefaultController", "ReadableByteStreamController", "ReadableStreamBYOBRequest", "WritableStream", "WritableStreamDefaultWriter", "WritableStreamDefaultController", "TransformStream", "TransformStreamDefaultController", "ByteLengthQueuingStrategy", "CountQueuingStrategy"]);
+
+// SyncManager
+names = filterOut(names,["SyncManager"]);
+
+// Web Cryptography API
+names = filterOut(names, ["CryptoKey", "SubtleCrypto", "Crypto", "crypto"]);
+
+// Media Source Extensions 
+names = filterOut(names, ["MediaSource", "SourceBuffer", "SourceBufferList"]);
+
+// The Screen Orientation API
+names = filterOut(names, ["ScreenOrientation"]);
+
+// WebRTC API
+names = filterOut(names, ["RTCPeerConnection", "RTCDataChannel", "RTCDataChannelEvent", "RTCSessionDescription", "RTCStatsReport", "RTCIceCandidate", "RTCIceTransport", "RTCPeerConnectionIceEvent", "RTCRtpSender", "RTCRtpReceiver", "RTCTrackEvent", "RTCSctpTransport", "RTCRtpTransceiver", "RTCPeerConnectionIceErrorEvent", "RTCErrorEvent", "RTCError", 
+"RTCDtlsTransport", "RTCDTMFToneChangeEvent", "RTCDTMFSender", "RTCCertificate"]);
+
+// MediaStream Image Capture API
+names = filterOut(names, ["PhotoCapabilities", "ImageCapture"]);
+
+// OverconstrainedError
+names = filterOut(names, ["OverconstrainedError"]);
+
+// Network Information API
+names = filterOut(names, ["NetworkInformation"]);
+
+// Media Capture and Streams API (Media Stream)
+names = filterOut(names, ["BlobEvent", "CanvasCaptureMediaStreamTrack", "InputDeviceInfo", "MediaDeviceKind", "MediaDeviceInfo", "MediaDevices", "MediaStream", "MediaStreamConstraints", "MediaStreamEvent", "MediaStreamTrack", "MediaStreamTrackEvent", "MediaTrackCapabilities", "MediaTrackConstraints", "MediaTrackSettings", "MediaTrackSupportedConstraints", "NavigatorUserMedia", "NavigatorUserMediaError", "OverconstrainedError", "URL"]);
+
+// Media Capabilities API
+names = filterOut(names, ["MediaCapabilities", "ScreenLuminance", "Screen", "MediaCapabilitiesInfo"]);
+
+// MediaStream Image Capture API
+names = filterOut(names, ["MediaSettingsRange"]);
+
+// MediaStream Recording API
+names = filterOut(names, ["MediaRecorder", "MediaRecorderErrorEvent", "BlobEvent"]);
+
+// Encrypted Media Extensions API
+names = filterOut(names, ["MediaEncryptedEvent"]);
+
+// IndexedDB API
+names = filterOut(names, ["IDBVersionChangeEvent", "IDBCursor", "IDBCursorSync", "IDBCursorWithValue", "IDBDatabase", "IDBDatabaseException", "IDBDatabaseSync", "IDBEnvironment", "IDBEnvironmentSync", "IDBFactory", "IDBFactorySync","IDBIndex", "IDBIndexSync", "IDBKeyRange", "IDBObjectStore", "IDBObjectStoreSync", "IDBOpenDBRequest","IDBRequest","IDBTransaction", "IDBTransactionSync", "IDBVersionChangeRequest"]);
+
+// Geolocation API
+names = filterOut(names, ["GeolocationPositionError", "Geolocation", "GeolocationCoordinates", "GeolocationPosition"]);
+
+// Gamepad API
+names = filterOut(names, ["Gamepad", "GamepadButton", "GamepadEvent", "GamepadHapticActuator", "GamepadPose"])
+
+// SVGTransform
+names = filterOut(names, ["SVGAElement", "SVGAltGlyphElement", "SVGAngle", "SVGAnimateColorElement", "SVGAnimateElement", "SVGAnimateMotionElement", "SVGAnimateTransformElement", "SVGAnimatedAngle", "SVGAnimatedBoolean",
+"SVGAnimatedEnumeration", "SVGAnimatedInteger", "SVGAnimatedLength", "SVGAnimatedLengthList", "SVGAnimatedNumber", "SVGAnimatedNumberList", "SVGAnimatedPathData", "SVGAnimatedPoints", "SVGAnimatedPreserveAspectRatio", "SVGAnimatedRect", "SVGAnimatedString", "SVGAnimatedTransformList",
+"SVGAnimationElement", "SVGCircleElement", "SVGClipPathElement", "SVGComponentTransferFunctionElement", "SVGCursorElement", "SVGDefsElement", "SVGDescElement", "SVGDocument", "SVGElement", "SVGEllipseElement","SVGTransform", "SVGUnitTypes", "SVGTransformList", "SVGStringList","TimeEvent", "SVGZoomEvent", "SVGUseElement",
+"SVGViewElement", "SVGZoomAndPan", "SVGTitleElement", "SVGRect", "SVGPreserveAspectRatio", "SVGPointList", "SVGPoint", "SVGNumberList", "SVGNumber", "SVGMatrix", "SVGLengthList", "SVGLength"])
+
+// Document Object Model XPath
+names = filterOut(names, ["XPathException", "XPathExceptionCode", "XPathEvaluator", "XPathExpression", "XPathNSResolver", "XPathNSResolver", "XPathResult", "XPathNamespace"])
+
+// XMLHttpRequest
+names = filterOut(names, ["FormData","XMLHttpRequest", "XMLHttpRequestEventTarget", "XMLHttpRequestUpload"])
+
+// Touch events
+names = filterOut(names, ["Touch", "TouchEvent", "TouchList"]);
+
+// window
+names = filterOut(names, ["length", "history", "document", "event", "frameElement", "frames", "fullScreen", "indexedDB", "innerHeight", "innerWidth", "isSecureContext", "isSecureContext", "localStorage", "location",
+"locationbar", "menubar", "name", "navigator", "oncanplay", "onwheel", "origin", "outerHeight", "outerWidth", "pageXOffset", "pageYOffset", "parent", "performance", "personalbar",
+"screen", "screenLeft", "screenTop", "screenX", "screenY", "scrollbars", "scrollX", "scrollY", "self", "sessionStorage","sidebar", "top", "window", "alert", "find", "blur", "clearInterval", "clearTimeout", "close",
+"confirm", "visualViewport", "status", "statusbar", "toolbar","convertPointFromNodeToPage", "createImageBitmap", "fetch", "find", "getAttention", "getComputedStyle", "getDefaultComputedStyle", "getSelection",
+"matchMedia", "minimize", "moveBy", "moveTo", "open", "postMessage", "print", "prompt", "resizeBy", "resizeTo", "restore","scroll", "scrollBy", "scrollTo", "setInterval", "setTimeout", "sizeToContent", "stop", "updateCommands",
+"event", "focus", "DOMConfiguration", "DOMError", "DOMErrorHandler", "DOMException", "DOMImplementation", "DOMImplementationList", "DOMImplementationRegistry", "DOMImplementationSource", "DOMLocator", "DOMObject", "DOMParser", "Document", "Node",
+"NodeFilter", "NodeIterator", "NodeList", "NonDocumentTypeChildNode", "NonDocumentTypeChildNode", "PromiseResolver", "Range", "StaticRange", "Text", "XMLDocument", "DOMPointReadOnly", "DOMPoint", "DOMMatrixReadOnly", "DOMMatrix", "DOMTokenList", "DOMRectReadOnly", "DOMRectList", "DOMRect", 
+"DOMQuad", "CustomEvent", "opener", "closed", "customElements", "devicePixelRatio", "defaultStatus", "defaultStatus", "captureEvents", "releaseEvents", "requestIdleCallback", "cancelIdleCallback", "btoa", "atob", "caches", ])
 
 
 console.log(names)
