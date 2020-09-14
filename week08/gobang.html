@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe</title>
+    <title>Gobang</title>
     <style>
         *{
             box-sizing: border-box;
@@ -11,26 +11,46 @@
         .wrap {
             margin: auto;
             display: grid;
-            width: 300px;
-            grid-template-rows: 100px 100px 100px;
-            grid-template-columns: 100px 100px 100px;
+            background: #502b02;
+            width: 750px;
+            height: 750px;
+            padding: 25px;
+            grid-template-rows: 
+                50px 50px 50px 50px 50px
+                50px 50px 50px 50px 50px
+                50px 50px 50px 50px 50px;
+            grid-template-columns: 
+                50px 50px 50px 50px 50px
+                50px 50px 50px 50px 50px
+                50px 50px 50px 50px 50px;
             /* border: 1px solid #eee; */
         }
         .item {
-            cursor: pointer;
-            border: 1px solid #fff;
-            background: #90ee90;
-            line-height: 100px;
             text-align: center;
-            font-size: 32px;
+            font-size: 40px;
+            position: relative;
+            border: 1px solid #000;
+            margin: -1px 0 0 -1px;
         }
-        .item:hover {
-            background: #eee890;
+        .item:nth-child(15n) {
+            border: none;
         }
-        .item.disabled {
-            background: #90ee90;
+        .item:nth-child(n+210) {
+            border: none;
+        }
+        .item span {
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            transform: translate(-50%, -50%);
+        }
+        .item.disabled span {
             cursor: auto;
         }
+
         .contorl {
             text-align: center;
         }
@@ -50,24 +70,31 @@
 
 <div id="wrap" class="wrap"></div>
 <script>
-// https://zh.wikipedia.org/zh/%E4%BA%95%E5%AD%97%E6%A3%8B
-
-let table = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0],
-];
-let user = 1;// 1:⭕️;2❌
+// https://zh.wikipedia.org/wiki/%E4%BA%94%E5%AD%90%E6%A3%8B
+// 15 x 15
+let table = [];
+let user = 1;// 1:⚫️;2⚪️
 let over = false;
+init(table, 15);
 render(table);
+document.querySelector('#wrap').addEventListener('click', (event) => {
+    console.log(event, event.target.dataset)
+    const dataset = event.target.dataset;
+    nextStep(dataset.y, dataset.x);
+})
+
+function init(table, size) {
+    for(let y = 0;y < size;y++) {
+        table[y] = [];
+        for(let x = 0;x < size;x++) {
+            table[y][x] = 0;
+        }
+    }
+}
 
 document.querySelector('#reset').addEventListener('click', reset);
 function reset() {
-    table = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-    ];
+    init(table, 15);
     user = 1;
     over = false;
     render(table);
@@ -81,13 +108,14 @@ function render(table) {
         for(const x in table[y]) {
             const status = table[y][x];
             const item = document.createElement('div');
-            item.innerText = ['', '⭕️', '❌'][status];
+            const span = document.createElement('span');
+            span.innerText = ['', '⚫️', '⚪️'][status];
+            span.dataset.x = x;
+            span.dataset.y = y;
+            item.append(span);
+
             item.classList.add('item');
             item.classList.add(status === 1 || status === 2 ? 'disabled' : 'item');
-
-            item.addEventListener('click', (event) => {
-                nextStep(y, x);
-            })
 
             itemFragment.appendChild(item);
         }
@@ -95,11 +123,11 @@ function render(table) {
     wrap.innerHTML = '';
     wrap.appendChild(itemFragment);
 
-    document.querySelector('#user').innerText = ['', '⭕️', '❌'][user];
+    document.querySelector('#user').innerText = ['', '⚫️', '⚪️'][user];
 
     if(check(user, table)) {
         over = true;
-        document.querySelector('#top').innerText = `${['', '⭕️', '❌'][user]} won.🥳🎉`
+        document.querySelector('#top').innerText = `${['', '⚫️', '⚪️'][user]} won.🥳🎉`
     } else {
         document.querySelector('#top').innerText = '';
     }
@@ -117,6 +145,7 @@ function nextStep(y, x) {
     }
 }
 
+// todo: 这里需要更改规则
 function check(user, table) {
     const yLength = table.length;
     const xLength = table[0] ? table[0].length : 0;
