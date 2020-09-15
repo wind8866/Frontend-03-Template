@@ -15,14 +15,8 @@
             width: 750px;
             height: 750px;
             padding: 25px;
-            grid-template-rows: 
-                50px 50px 50px 50px 50px
-                50px 50px 50px 50px 50px
-                50px 50px 50px 50px 50px;
-            grid-template-columns: 
-                50px 50px 50px 50px 50px
-                50px 50px 50px 50px 50px
-                50px 50px 50px 50px 50px;
+            grid-template-rows: repeat(15, 50px);
+            grid-template-columns: repeat(15, 50px);
             /* border: 1px solid #eee; */
         }
         .item {
@@ -59,6 +53,10 @@
             margin-right: 2em;
             margin-bottom: 10px;
         }
+        .info {
+            color: orange;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -66,6 +64,7 @@
     <span>User:<span id="user"></span></span>
     <span id="top"></span>
     <button id="reset">reset</button>
+    <span id="info" class="info"></span>
 </div>
 
 <div id="wrap" class="wrap"></div>
@@ -98,9 +97,10 @@ function reset() {
     user = 1;
     over = false;
     render(table);
+    document.querySelector('#info').innerText = '';
 }
 
-function render(table) {
+function render(table, xy) {
     const wrap = document.querySelector('#wrap');
     const itemFragment = document.createDocumentFragment();
     // 横向坐标x，纵向坐标y
@@ -125,7 +125,7 @@ function render(table) {
 
     document.querySelector('#user').innerText = ['', '⚫️', '⚪️'][user];
 
-    if(check(user, table)) {
+    if(check(user, table, xy)) {
         over = true;
         document.querySelector('#top').innerText = `${['', '⚫️', '⚪️'][user]} won.🥳🎉`
     } else {
@@ -135,64 +135,137 @@ function render(table) {
 
 function nextStep(y, x) {
     if (over) {
-        console.log('胜败乃兵家常事，大侠请从新来过');
+        document.querySelector('#info').innerText = '胜败乃兵家常事，大侠请从新来过';
     } else if (table[y][x] === 1 || table[y][x] === 2) {
-        console.log('这已经有棋子了');
+        document.querySelector('#info').innerText = '这已经有棋子了';
     } else {
+        document.querySelector('#info').innerText = '';
         table[y][x] = user;
-        render(table);
+        render(table, {x, y});
         user = 3 - user;
     }
 }
 
 // todo: 这里需要更改规则
-function check(user, table) {
+function check(user, table, xy) {
+    if (!xy) {
+        console.log('没有当前落子坐标');
+        return false;
+    }
+    const x = Number(xy.x);
+    const y = Number(xy.y);
+
     const yLength = table.length;
     const xLength = table[0] ? table[0].length : 0;
+
     // 横向
-    for(let y = 0; y < yLength; y++) {
-        let row = true;
-        for(let x = 0; x < xLength; x++) {
-            if (user !== table[y][x]) {
-                row = false;
+    {
+        let count = 1;
+        let hand = 1;
+        while(x - hand >= 0) {
+            if (table[y][x - hand] === user) {
+                count++;
+            } else {
+                break;
             }
+            hand++;
         }
-        if (row) {
+        hand = 1;
+        while(x + hand < xLength) {
+            if (table[y][x + hand] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        if (count > 4) {
             return true;
         }
     }
 
     // 纵向
-    for(let x = 0; x < xLength; x++) {
-        let col = true;
-        for(let y = 0; y < yLength; y++) {
-            if (user !== table[y][x]) {
-                col = false;
+    {
+        let count = 1;
+        let hand = 1;
+        while(y - hand >= 0) {
+            if (table[y - hand][x] === user) {
+                count++;
+            } else {
+                break;
             }
+            hand++;
         }
-        if (col) {
+        hand = 1;
+        while(x + hand < xLength) {
+            if (table[y + hand][x] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        if (count > 4) {
             return true;
         }
     }
 
-    // 斜向
+    // 斜向，左下至右上
     {
-        let slant = true;
-        let reSlant = true;
-        for(let y = 0; y < yLength; y++) {
-            for(let x = 0; x < xLength; x++) {
-                if (y === x && user !== table[y][x]) {
-                    slant = false;
-                }
-                if (y + x === 2 && user !== table[y][x]) {
-                    reSlant = false;
-                }
+        let count = 1;
+        let hand = 1;
+        // 从原点向左下，y增加，x减小
+        while(y + hand < yLength && x - hand >= 0) {
+            if (table[y + hand][x - hand] === user) {
+                count++;
+            } else {
+                break;
             }
+            hand++;
         }
-        if (slant || reSlant) {
+        hand = 1;
+        // 从原点向右上，y减小，x增加
+        while(y - hand >= 0 && x + hand < xLength) {
+            if (table[y - hand][x + hand] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        if (count > 4) {
             return true;
         }
     }
+
+    // 斜向，左上至右下
+    {
+        let count = 1;
+        let hand = 1;
+        // 从原点向左上，y减小，x减小
+        while(y - hand  >= 0 && x - hand >= 0) {
+            if (table[y - hand][x - hand] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        hand = 1;
+        // 从原点向右下，y增加，x增加
+        while(y + hand < yLength && x + hand < xLength) {
+            if (table[y + hand][x + hand] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        if (count > 4) {
+            return true;
+        }
+    }
+    
 
     return false;
 }
