@@ -39,14 +39,32 @@
             margin-right: 2em;
             margin-bottom: 10px;
         }
+        .info {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
 <div class="contorl">
     <span>User:<span id="user"></span></span>
     <span id="top"></span>
-    <button id="reset">reset</button>
+    <span>
+        <label>
+            <input type="radio" onchange="changeType(this)" id="double" name="type" value="double" checked>
+            双人👫
+        </label>
+
+        <label>
+            <input type="radio" onchange="changeType(this)" id="robot" name="type" value="robot">
+            人机🤖️
+        </label>
+    </span>
+    <button id="reset">重置</button>
+    <button id="robot-begin">残局对战</button>
 </div>
+<div id="info" class="info"></div>
 
 <div id="wrap" class="wrap"></div>
 <script>
@@ -58,11 +76,30 @@ let table = [
     [0, 0, 0],
 ];
 let user = 1;// 1:⭕️;2❌
+let gameType = 'double';
 let over = false;
+
 render(table);
 
 document.querySelector('#reset').addEventListener('click', reset);
+document.querySelector('#robot-begin').addEventListener('click', () => {
+    reset();
+    document.querySelector('#robot').click();
+    table = [
+        [0, 0, 0],
+        [0, 2, 0],
+        [0, 0, 0],
+    ];
+    render(table, user);
+})
+
+function changeType(target) {
+    const value = target.value;
+    gameType = value;
+}
+
 function reset() {
+    setInfo('');
     table = [
         [0, 0, 0],
         [0, 0, 0],
@@ -105,9 +142,13 @@ function render(table, nextUser = user) {
     }
 }
 
+function setInfo(info) {
+    document.querySelector('#info').innerText = info;
+}
+
 function nextStep(y, x) {
     if (over) {
-        console.log('胜败乃兵家常事，大侠请从新来过');
+        setInfo('胜败乃兵家常事，大侠请从新来过');
     } else if (table[y][x] === 1 || table[y][x] === 2) {
         console.log('这已经有棋子了');
     } else {
@@ -123,11 +164,13 @@ function nextStep(y, x) {
                 console.log('不能赢');
             }
         }
-        robotStep()
+        if (gameType === 'robot') {
+            robotStep();
+        }
     }
 }
 function robotStep() {
-    const result = bsetChoice(table, user);
+    const result = bestNext(table, user);
     if (result.point) {
         table[result.point.y][result.point.x] = user;
     }
@@ -142,7 +185,7 @@ function robotStep() {
 }
 
 function forecast(nextUser, table) {
-    const copyTable = JSON.parse(JSON.stringify(table));
+    const copyTable = clone(table);
     for(const y in copyTable) {
         for(const x in copyTable[y]) {
             if (copyTable[y][x] === 0) {
@@ -157,8 +200,45 @@ function forecast(nextUser, table) {
     return null;
 }
 
-function bestNext() {
-    
+function bestNext(table, user) {
+    let point;
+	if (point = forecast(user, table)) {
+		return {
+			point,
+			result: 1,
+		}
+	}
+	let result = -2;   
+
+    const yLength = table.length;
+    const xLength = table[0] ? table[0].length : 0;
+	outer:for (let y = 0;y < yLength;y++) {
+		for (let x = 0;x < xLength;x++) {
+			if (table[y][x]) {
+				continue;
+			}
+			let tmp = clone(table);
+			tmp[y][x] = user;
+            // console.log(JSON.stringify(tmp));
+			let r = bestNext(tmp, 3 - user).result;
+            // console.log('-----')
+
+			if (-r > result) {
+				result = -r;
+				point = {
+                    y,
+                    x,
+                };
+			}
+            if (result === 1) {
+                break outer;
+            }
+		}	
+	}
+	return {
+		point,
+		result: point ? result : 0
+	}
 }
 
 function check(user, table) {
@@ -212,48 +292,8 @@ function check(user, table) {
     return false;
 }
 
-// --------------------------
-
 function clone(template) {
 	return JSON.parse(JSON.stringify(template))
-}
-function bsetChoice(pattern, color) {
-	let p;
-	if (p = forecast(color, pattern)) {
-		return {
-			point: p,
-			result: 1,
-		}
-	}
-	let result = -2;
-	let point = 0;
-	outer:for (let i = 0;i < 3;i++) {
-		for (let j = 0;j < 3;j++) {
-			if (pattern[i][j]) {
-				continue;
-			}
-			let tmp = clone(pattern);
-			tmp[i][j] = color;
-            console.log(JSON.stringify(tmp));
-			let r = bsetChoice(tmp, 3 - color).result;
-            console.log('-----')
-
-			if (-r > result) {
-				result = -r;
-				point = {
-                    y: i,
-                    x: j,
-                };
-			}
-            if (result === 1) {
-                break outer;
-            }
-		}	
-	}
-	return {
-		point: point,
-		result: point ? result : 0
-	}
 }
 </script>
 </body>
