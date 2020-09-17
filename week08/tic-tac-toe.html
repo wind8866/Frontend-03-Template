@@ -73,7 +73,7 @@ function reset() {
     render(table);
 }
 
-function render(table) {
+function render(table, nextUser = user) {
     const wrap = document.querySelector('#wrap');
     const itemFragment = document.createDocumentFragment();
     // 横向坐标x，纵向坐标y
@@ -95,7 +95,7 @@ function render(table) {
     wrap.innerHTML = '';
     wrap.appendChild(itemFragment);
 
-    document.querySelector('#user').innerText = ['', '⭕️', '❌'][user];
+    document.querySelector('#user').innerText = ['', '⭕️', '❌'][nextUser];
 
     if(check(user, table)) {
         over = true;
@@ -112,7 +112,7 @@ function nextStep(y, x) {
         console.log('这已经有棋子了');
     } else {
         table[y][x] = user;
-        render(table);
+        render(table, 3 - user);
         user = 3 - user;
     }
 }
