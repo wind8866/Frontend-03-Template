@@ -116,7 +116,7 @@ function nextStep(y, x) {
         user = 3 - user;
         // 预测下一步是否能赢
         if (!over) {
-            const forecastNext = forecast(user);
+            const forecastNext = forecast(user, table);
             if (forecastNext) {
                 console.log('你要赢了', forecastNext)
             } else {
@@ -126,7 +126,7 @@ function nextStep(y, x) {
     }
 }
 
-function forecast(nextUser) {
+function forecast(nextUser, table) {
     const copyTable = JSON.parse(JSON.stringify(table));
     for(const y in copyTable) {
         for(const x in copyTable[y]) {
@@ -140,6 +140,10 @@ function forecast(nextUser) {
         }
     }
     return null;
+}
+
+function bestNext() {
+    
 }
 
 function check(user, table) {
@@ -192,6 +196,53 @@ function check(user, table) {
 
     return false;
 }
+
+// --------------------------
+
+function clone(template) {
+	return JSON.parse(JSON.stringify(template))
+}
+function bsetChoice(pattern, color) {
+	let p;
+	if (p = forecast(color, pattern)) {
+		return {
+			point: p,
+			result: 1,
+		}
+	}
+	let result = -2;
+	let point = 0;
+	outer:for (let i = 0;i < 3;i++) {
+		for (let j = 0;j < 3;j++) {
+			if (pattern[i][j]) {
+				continue;
+			}
+			let tmp = clone(pattern);
+			tmp[i][j] = color;
+            console.log(JSON.stringify(tmp));
+			let r = bsetChoice(tmp, 3 - color).result;
+            console.log('-----')
+
+			if (-r > result) {
+				result = -r;
+				point = [j, i];
+			}
+            if (result === 1) {
+                break outer;
+            }
+		}	
+	}
+	return {
+		point: point,
+		result: point ? result : 0
+	}
+}
+const pattern = [
+	[0, 2, 0],
+	[0, 1, 0],
+	[0, 0, 0],
+];
+console.log(bsetChoice(pattern, 1));
 </script>
 </body>
 </html>
