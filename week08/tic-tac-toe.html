@@ -19,7 +19,7 @@
         .item {
             cursor: pointer;
             border: 1px solid #fff;
-            background: #90ee90;
+            background: #ddffdd;
             line-height: 100px;
             text-align: center;
             font-size: 32px;
@@ -28,7 +28,7 @@
             background: #eee890;
         }
         .item.disabled {
-            background: #90ee90;
+            background: #ddffdd;
             cursor: auto;
         }
         .contorl {
@@ -114,7 +114,32 @@ function nextStep(y, x) {
         table[y][x] = user;
         render(table, 3 - user);
         user = 3 - user;
+        // 预测下一步是否能赢
+        if (!over) {
+            const forecastNext = forecast(user);
+            if (forecastNext) {
+                console.log('你要赢了', forecastNext)
+            } else {
+                console.log('不能赢');
+            }
+        }
     }
+}
+
+function forecast(nextUser) {
+    const copyTable = JSON.parse(JSON.stringify(table));
+    for(const y in copyTable) {
+        for(const x in copyTable[y]) {
+            if (copyTable[y][x] === 0) {
+                copyTable[y][x] = nextUser;
+                if (check(nextUser, copyTable)) {
+                    return {x, y};
+                }
+                copyTable[y][x] = 0;
+            }
+        }
+    }
+    return null;
 }
 
 function check(user, table) {
