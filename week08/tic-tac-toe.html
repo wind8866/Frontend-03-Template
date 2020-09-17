@@ -123,7 +123,22 @@ function nextStep(y, x) {
                 console.log('不能赢');
             }
         }
+        robotStep()
     }
+}
+function robotStep() {
+    const result = bsetChoice(table, user);
+    if (result.point) {
+        table[result.point.y][result.point.x] = user;
+    }
+    if (result.result === 1) {
+        console.log('赢了')
+    } else {
+        console.clear();
+    }
+    render(table, 3 - user);
+    user = 3 - user;
+
 }
 
 function forecast(nextUser, table) {
@@ -225,7 +240,10 @@ function bsetChoice(pattern, color) {
 
 			if (-r > result) {
 				result = -r;
-				point = [j, i];
+				point = {
+                    y: i,
+                    x: j,
+                };
 			}
             if (result === 1) {
                 break outer;
@@ -237,12 +255,6 @@ function bsetChoice(pattern, color) {
 		result: point ? result : 0
 	}
 }
-const pattern = [
-	[0, 2, 0],
-	[0, 1, 0],
-	[0, 0, 0],
-];
-console.log(bsetChoice(pattern, 1));
 </script>
 </body>
 </html>
