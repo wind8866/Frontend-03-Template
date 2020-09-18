@@ -100,7 +100,7 @@ function reset() {
     document.querySelector('#info').innerText = '';
 }
 
-function render(table, xy) {
+function render(table, xy, nextUser = user) {
     const wrap = document.querySelector('#wrap');
     const itemFragment = document.createDocumentFragment();
     // 横向坐标x，纵向坐标y
@@ -141,7 +141,7 @@ function nextStep(y, x) {
     } else {
         document.querySelector('#info').innerText = '';
         table[y][x] = user;
-        render(table, {x, y});
+        render(table, {x, y}, 3 - user);
         user = 3 - user;
     }
 }
