@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gobang Web</title>
+    <style>
+        *{
+            box-sizing: border-box;
+        }
+        .wrap {
+            margin: auto;
+            display: grid;
+            background: #502b02;
+            width: 750px;
+            height: 750px;
+            padding: 25px;
+            grid-template-rows: repeat(15, 50px);
+            grid-template-columns: repeat(15, 50px);
+            /* border: 1px solid #eee; */
+        }
+        .item {
+            text-align: center;
+            font-size: 40px;
+            position: relative;
+            border: 1px solid #000;
+            margin: -1px 0 0 -1px;
+        }
+        .item:nth-child(15n) {
+            border: none;
+        }
+        .item:nth-child(n+210) {
+            border: none;
+        }
+        .item span {
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            transform: translate(-50%, -50%);
+        }
+        .item.disabled span {
+            cursor: auto;
+        }
+
+        .contorl {
+            text-align: center;
+        }
+        .contorl > *{
+            display: inline-block;
+            margin-right: 2em;
+            margin-bottom: 10px;
+        }
+        .info {
+            color: orange;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="contorl">
+    <span>User:<span id="user"></span></span>
+    <span id="top"></span>
+    <button id="reset">reset</button>
+    <span id="info" class="info"></span>
+</div>
+
+<div id="wrap" class="wrap"></div>
+<script>
+// https://zh.wikipedia.org/wiki/%E4%BA%94%E5%AD%90%E6%A3%8B
+// 15 x 15
+
+console.log(window.search)
+
+function getUser() {
+    const isUser2 = /user=2/.test(window.location.search)
+    if (isUser2) {
+        
+    } else {
+
+    }
+}
+
+let table = [];
+let user = 1;// 1:⚫️;2⚪️
+let over = false;
+init(table, 15);
+// render(table);
+document.querySelector('#wrap').addEventListener('click', (event) => {
+    console.log(event, event.target.dataset)
+    const dataset = event.target.dataset;
+    nextStep(dataset.y, dataset.x);
+})
+
+function init(table, size) {
+    for(let y = 0;y < size;y++) {
+        table[y] = [];
+        for(let x = 0;x < size;x++) {
+            table[y][x] = 0;
+        }
+    }
+}
+
+document.querySelector('#reset').addEventListener('click', reset);
+function reset() {
+    init(table, 15);
+    user = 1;
+    over = false;
+    render(table);
+    document.querySelector('#info').innerText = '';
+}
+
+function render(table, xy, nextUser = user) {
+    const wrap = document.querySelector('#wrap');
+    const itemFragment = document.createDocumentFragment();
+    // 横向坐标x，纵向坐标y
+    for(const y in table) {
+        for(const x in table[y]) {
+            const status = table[y][x];
+            const item = document.createElement('div');
+            const span = document.createElement('span');
+            span.innerText = ['', '⚫️', '⚪️'][status];
+            span.dataset.x = x;
+            span.dataset.y = y;
+            item.append(span);
+
+            item.classList.add('item');
+            item.classList.add(status === 1 || status === 2 ? 'disabled' : 'item');
+
+            itemFragment.appendChild(item);
+        }
+    }
+    wrap.innerHTML = '';
+    wrap.appendChild(itemFragment);
+
+    document.querySelector('#user').innerText = ['', '⚫️', '⚪️'][user];
+
+    if(check(user, table, xy)) {
+        over = true;
+        document.querySelector('#top').innerText = `${['', '⚫️', '⚪️'][user]} won.🥳🎉`
+    } else {
+        document.querySelector('#top').innerText = '';
+    }
+}
+
+function nextStep(y, x) {
+    if (over) {
+        document.querySelector('#info').innerText = '胜败乃兵家常事，大侠请从新来过';
+    } else if (table[y][x] === 1 || table[y][x] === 2) {
+        document.querySelector('#info').innerText = '这已经有棋子了';
+    } else {
+        document.querySelector('#info').innerText = '';
+        table[y][x] = user;
+        render(table, {x, y}, 3 - user);
+        user = 3 - user;
+    }
+}
+
+function check(user, table, xy) {
+    if (!xy) {
+        console.log('没有当前落子坐标');
+        return false;
+    }
+    const x = Number(xy.x);
+    const y = Number(xy.y);
+
+    const yLength = table.length;
+    const xLength = table[0] ? table[0].length : 0;
+
+    // 横向
+    {
+        let count = 1;
+        let hand = 1;
+        while(x - hand >= 0) {
+            if (table[y][x - hand] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        hand = 1;
+        while(x + hand < xLength) {
+            if (table[y][x + hand] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        if (count > 4) {
+            return true;
+        }
+    }
+
+    // 纵向
+    {
+        let count = 1;
+        let hand = 1;
+        while(y - hand >= 0) {
+            if (table[y - hand][x] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        hand = 1;
+        while(x + hand < xLength) {
+            if (table[y + hand][x] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        if (count > 4) {
+            return true;
+        }
+    }
+
+    // 斜向，左下至右上
+    {
+        let count = 1;
+        let hand = 1;
+        // 从原点向左下，y增加，x减小
+        while(y + hand < yLength && x - hand >= 0) {
+            if (table[y + hand][x - hand] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        hand = 1;
+        // 从原点向右上，y减小，x增加
+        while(y - hand >= 0 && x + hand < xLength) {
+            if (table[y - hand][x + hand] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        if (count > 4) {
+            return true;
+        }
+    }
+
+    // 斜向，左上至右下
+    {
+        let count = 1;
+        let hand = 1;
+        // 从原点向左上，y减小，x减小
+        while(y - hand  >= 0 && x - hand >= 0) {
+            if (table[y - hand][x - hand] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        hand = 1;
+        // 从原点向右下，y增加，x增加
+        while(y + hand < yLength && x + hand < xLength) {
+            if (table[y + hand][x + hand] === user) {
+                count++;
+            } else {
+                break;
+            }
+            hand++;
+        }
+        if (count > 4) {
+            return true;
+        }
+    }
+    
+
+    return false;
+}
+</script>
+</body>
+</html>
