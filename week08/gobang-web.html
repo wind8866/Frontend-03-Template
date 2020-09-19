@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gobang</title>
+    <title>Gobang Web</title>
     <style>
         *{
             box-sizing: border-box;
@@ -71,11 +71,23 @@
 <script>
 // https://zh.wikipedia.org/wiki/%E4%BA%94%E5%AD%90%E6%A3%8B
 // 15 x 15
+
+console.log(window.search)
+
+function getUser() {
+    const isUser2 = /user=2/.test(window.location.search)
+    if (isUser2) {
+        
+    } else {
+
+    }
+}
+
 let table = [];
 let user = 1;// 1:⚫️;2⚪️
 let over = false;
 init(table, 15);
-render(table);
+// render(table);
 document.querySelector('#wrap').addEventListener('click', (event) => {
     console.log(event, event.target.dataset)
     const dataset = event.target.dataset;
@@ -146,7 +158,6 @@ function nextStep(y, x) {
     }
 }
 
-// todo: 这里需要更改规则
 function check(user, table, xy) {
     if (!xy) {
         console.log('没有当前落子坐标');
