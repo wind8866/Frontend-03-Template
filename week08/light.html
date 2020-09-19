@@ -55,15 +55,14 @@ function sleep(t) {
     })
 }
 
-function go() {
+async function go() {
     render('green');
-    sleep(10000).then(() => {
-        render('yellow');
-        return sleep(2000);
-    }).then(() => {
-        render('red');
-        return sleep(5000);
-    }).then(go)   
+    await sleep(10000);
+    render('yellow');
+    await sleep(2000);
+    render('red');
+    await sleep(5000);
+    go();
 }
 go();
 </script>
