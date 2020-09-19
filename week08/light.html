@@ -26,20 +26,20 @@ const light = {
     yellow: document.querySelector('#yellow'),
     red: document.querySelector('#red'),
 };
-green();
-function green() {
-    render('green');
-    setTimeout(yellow, 10000);
-}
+// green();
+// function green() {
+//     render('green');
+//     setTimeout(yellow, 10000);
+// }
 
-function yellow() {
-    render('yellow');
-    setTimeout(red, 2000);
-}
-function red() {
-    render('yellow');
-    setTimeout(green, 5000);
-}
+// function yellow() {
+//     render('yellow');
+//     setTimeout(red, 2000);
+// }
+// function red() {
+//     render('yellow');
+//     setTimeout(green, 5000);
+// }
 
 function render(color) {
     light.green.style.background = 'gray';
@@ -49,6 +49,23 @@ function render(color) {
     light[color].style.background = color;
 }
 
+function sleep(t) {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, t);
+    })
+}
+
+function go() {
+    render('green');
+    sleep(10000).then(() => {
+        render('yellow');
+        return sleep(2000);
+    }).then(() => {
+        render('red');
+        return sleep(5000);
+    }).then(go)   
+}
+go();
 </script>
 </body>
 </html>
