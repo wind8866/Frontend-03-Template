@@ -19,6 +19,7 @@
 <div id="green" class="light"></div>
 <div id="yellow" class="light"></div>
 <div id="red" class="light"></div>
+<button id="next">next</button>
 <script>
 // 绿灯10秒、黄灯2秒、红灯5秒
 const light = {
@@ -55,13 +56,19 @@ function sleep(t) {
     })
 }
 
+function happen(element, eventName) {
+    return new Promise((resolve, reject) => {
+        element.addEventListener(eventName, resolve);
+    })
+}
+const next = document.querySelector('#next');
 async function go() {
     render('green');
-    await sleep(10000);
+    await happen(next, 'click');
     render('yellow');
-    await sleep(2000);
+    await happen(next, 'click');
     render('red');
-    await sleep(5000);
+    await happen(next, 'click');
     go();
 }
 go();
