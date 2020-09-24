@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广度优先搜索</title>
+    <style>
+        .wrap {
+            font-size: 0;
+            width: 900px;
+        }
+        .wrap .item {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-right: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+            background-color: #ddd;
+        }
+        .wrap .item[data-status="1"] {
+            background-color: #888;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap" class="wrap"></div>
+<script>
+let isClick = false;
+const wrap = document.querySelector('#wrap');
+wrap.addEventListener('mousedown', () => {isClick = true});
+wrap.addEventListener('mouseup', () => {isClick = false});
+wrap.addEventListener('mousedown', event => {
+    console.log(event);
+    event.stopPropagation;
+    if (event.button === 2) {
+        map.fill(0)
+
+    }
+});
+const map = Array(10000);
+map.fill(0)
+
+function drow() {
+    
+}
+map.forEach((satus, index) => {
+    const grid = document.createElement('div');
+    grid.addEventListener('mouseover', event => {
+        if (isClick) {
+            const target = event.target;
+            map[target.dataset.index] = 1;
+            target.dataset.status = 1
+        }
+    })
+    grid.classList.add('item');
+    grid.dataset.status = status;
+    grid.dataset.index = index;
+    wrap.append(grid);
+});
+</script>
+</body>
+</html>
