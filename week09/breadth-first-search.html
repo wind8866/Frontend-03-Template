@@ -49,9 +49,10 @@ let map = [];
 init();
 console.log(`search({ x: 5, y: 6}, {x: 56, y: 39})`);
 
-
 function pause() {
-    
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, 5);
+    })
 }
 
 function review() {
@@ -72,12 +73,13 @@ function enterList(dot, temp) {
         }
     }
 }
-function search(start, end) {
+const search = async function (start, end) {
     console.log(start, end)
     wrap.childNodes[start.x + start.y * 100].dataset.start = '';
     wrap.childNodes[end.x + end.y * 100].dataset.target = '';
     let temp = [start];
     while (temp.length > 0) {
+        await pause();
         const thisDot = temp.shift();
         if (thisDot.x === end.x && thisDot.y === end.y) {
             console.log('🥳', thisDot);
