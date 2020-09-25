@@ -69,11 +69,12 @@ function enterList(dot, temp) {
     if (dot.x >= 0 && dot.x < 100 && dot.y >= 0 && dot.y < 100) {
         if (map[dot.x + dot.y * 100] === 0) {
             map[dot.x + dot.y * 100] = 2;
+            // wrap.childNodes[dot.x + dot.y * 100].dataset.status = 2;// 是否显示当前temp待遍历元素
             temp.push(dot);
         }
     }
 }
-const search = async function (start, end) {
+async function search(start, end) {
     console.log(start, end)
     wrap.childNodes[start.x + start.y * 100].dataset.start = '';
     wrap.childNodes[end.x + end.y * 100].dataset.target = '';
