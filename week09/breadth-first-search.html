@@ -23,40 +23,58 @@
     </style>
 </head>
 <body>
+<button id="save">save</button>
+<!-- <button id="clean">clean</button> -->
 <div id="wrap" class="wrap"></div>
 <script>
-let isClick = false;
+let pressDown = false;
 const wrap = document.querySelector('#wrap');
-wrap.addEventListener('mousedown', () => {isClick = true});
-wrap.addEventListener('mouseup', () => {isClick = false});
-wrap.addEventListener('mousedown', event => {
-    console.log(event);
-    event.stopPropagation;
-    if (event.button === 2) {
-        map.fill(0)
+let map = [];
+init();
 
+function review() {
+    const nodeList = wrap.children;
+    for(let i = 0;i < map.length;i++) {
+        nodeList[i].dataset.status = map[i];
     }
-});
-const map = Array(10000);
-map.fill(0)
-
-function drow() {
-    
 }
-map.forEach((satus, index) => {
-    const grid = document.createElement('div');
-    grid.addEventListener('mouseover', event => {
-        if (isClick) {
-            const target = event.target;
-            map[target.dataset.index] = 1;
-            target.dataset.status = 1
-        }
-    })
-    grid.classList.add('item');
-    grid.dataset.status = status;
-    grid.dataset.index = index;
-    wrap.append(grid);
-});
+
+function init() {
+    const save = document.querySelector('#save');
+    wrap.addEventListener('mousedown', () => {pressDown = true});
+    wrap.addEventListener('mouseup', () => {pressDown = false});
+    wrap.addEventListener('contextmenu', event => {
+        event.preventDefault();
+        map.fill(0)
+        review();
+    });
+    save.addEventListener('click', () => {
+        window.localStorage.setItem('map', JSON.stringify(map));
+    });
+
+    if (window.localStorage.getItem('map')) {
+        map = JSON.parse(window.localStorage.getItem('map'));
+    } else {
+        map = Array(10000);
+        map.fill(0)
+    }
+
+    map.forEach((status, index) => {
+        const grid = document.createElement('div');
+        grid.addEventListener('mouseover', event => {
+            if (pressDown) {
+                const target = event.target;
+                map[target.dataset.index] = 1;
+                target.dataset.status = 1
+            }
+        })
+        grid.classList.add('item');
+        grid.dataset.status = status;
+        grid.dataset.index = index;
+        wrap.append(grid);
+    });
+}
+
 </script>
 </body>
 </html>
