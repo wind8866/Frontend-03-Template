@@ -13,12 +13,26 @@
             display: inline-block;
             width: 8px;
             height: 8px;
-            border-right: 1px solid #fff;
-            border-bottom: 1px solid #fff;
+            /* border-right: 1px solid #fff;
+            border-bottom: 1px solid #fff; */
+            margin-right: 1px;
+            margin-bottom: 1px;
             background-color: #ddd;
         }
         .wrap .item[data-status="1"] {
+            background-color: lightblue;
+        }
+        .wrap .item[data-status="2"] {
+            background-color:#f39f04;
+        }
+        .wrap .item[data-status="3"] {
             background-color: #888;
+        }
+        .wrap .item[data-start] {
+            outline: 1px solid lightgreen;
+        }
+        .wrap .item[data-target] {
+            outline: 1px solid red;
         }
     </style>
 </head>
@@ -27,23 +41,70 @@
 <!-- <button id="clean">clean</button> -->
 <div id="wrap" class="wrap"></div>
 <script>
+// status: 0空；1墙；2后续操作；3否
+// 
 let pressDown = false;
 const wrap = document.querySelector('#wrap');
 let map = [];
 init();
+console.log(`search({ x: 5, y: 6}, {x: 56, y: 39})`);
+
+
+function pause() {
+    
+}
 
 function review() {
-    const nodeList = wrap.children;
+    const nodeList = wrap.childNodes;
     for(let i = 0;i < map.length;i++) {
         nodeList[i].dataset.status = map[i];
     }
 }
+function setStatus(dot, status) {
+    map[dot.x + dot.y * 100] = status;
+    wrap.childNodes[dot.x + dot.y * 100].dataset.status = status;
+}
+function enterList(dot, temp) {
+    if (dot.x >= 0 && dot.x < 100 && dot.y >= 0 && dot.y < 100) {
+        if (map[dot.x + dot.y * 100] === 0) {
+            map[dot.x + dot.y * 100] = 2;
+            temp.push(dot);
+        }
+    }
+}
+function search(start, end) {
+    console.log(start, end)
+    wrap.childNodes[start.x + start.y * 100].dataset.start = '';
+    wrap.childNodes[end.x + end.y * 100].dataset.target = '';
+    let temp = [start];
+    while (temp.length > 0) {
+        const thisDot = temp.shift();
+        if (thisDot.x === end.x && thisDot.y === end.y) {
+            console.log('🥳', thisDot);
+            return;
+        }
+        setStatus(thisDot, 3);
+        wrap.childNodes[thisDot.x + thisDot.y * 100].dataset.status = 3;
+
+        // enterList({ x: thisDot.x - 1, y: thisDot.y - 1}, temp);// 左上
+        enterList({ x: thisDot.x - 0, y: thisDot.y - 1}, temp);// 上
+        // enterList({ x: thisDot.x + 1, y: thisDot.y - 1}, temp);// 右上
+        enterList({ x: thisDot.x + 1, y: thisDot.y + 0}, temp);// 右
+        // enterList({ x: thisDot.x + 1, y: thisDot.y + 1}, temp);// 右下
+        enterList({ x: thisDot.x - 0, y: thisDot.y + 1}, temp);// 下
+        // enterList({ x: thisDot.x - 1, y: thisDot.y + 1}, temp);// 左下
+        enterList({ x: thisDot.x - 1, y: thisDot.y + 0}, temp);// 左
+        // console.log(temp)
+    }
+}
+
 
 function init() {
     const save = document.querySelector('#save');
     wrap.addEventListener('mousedown', () => {pressDown = true});
     wrap.addEventListener('mouseup', () => {pressDown = false});
     wrap.addEventListener('contextmenu', event => {
+        // todo: 删除target与start
         event.preventDefault();
         map.fill(0)
         review();
