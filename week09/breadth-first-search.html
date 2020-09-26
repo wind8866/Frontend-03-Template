@@ -78,8 +78,8 @@ function setStatus(dot, status) {
     wrap.childNodes[dot.x + dot.y * 100].dataset.status = status;
 }
 function enterList(dot, temp, beforeDot) {
-    // 防止斜向穿墙(设定只有当前目标点dot与上一目标点before同时相邻的点的位置状态为0时才可斜向)
     if (dot.x >= 0 && dot.x < 100 && dot.y >= 0 && dot.y < 100) {
+        // 防止斜向穿墙(设定只有当前目标点dot与上一目标点before同时相邻的点的位置状态为0时才可斜向)
         const count = Math.abs((dot.x - beforeDot.x) + (dot.y - beforeDot.y));
         if (count === 0 || count === 2) {
             // 斜向为0、2或-2，竖向或横向为-1或1
