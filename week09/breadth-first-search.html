@@ -43,6 +43,7 @@
 <button id="save">save</button>
 <!-- <button id="clean">clean</button> -->
 <div id="wrap" class="wrap"></div>
+<script src="./defaultmap.js"></script>
 <script>
 // status: 0空；1墙；2后续操作；3否；4路径
 // 
@@ -59,6 +60,10 @@ function pause(timer = 5) {
     });
 }
 
+function setLocalStorage() {
+    window.localStorage.setItem('map', JSON.stringify(defaultMap));
+}
+
 function review() {
     const nodeList = wrap.childNodes;
     for(let i = 0;i < map.length;i++) {
@@ -73,7 +78,25 @@ function setStatus(dot, status) {
     wrap.childNodes[dot.x + dot.y * 100].dataset.status = status;
 }
 function enterList(dot, temp, beforeDot) {
+    // 防止斜向穿墙(设定只有当前目标点dot与上一目标点before同时相邻的点的位置状态为0时才可斜向)
     if (dot.x >= 0 && dot.x < 100 && dot.y >= 0 && dot.y < 100) {
+        const count = Math.abs((dot.x - beforeDot.x) + (dot.y - beforeDot.y));
+        if (count === 0 || count === 2) {
+            // 斜向为0、2或-2，竖向或横向为-1或1
+            // 取与dot与beforeDot都相邻的两个值
+            const dot1 = {
+                x: dot.x,
+                y: beforeDot.y,
+            }
+            const dot2 = {
+                x: beforeDot.x,
+                y: dot.y,
+            }
+            if (map[dot1.x + dot1.y * 100] !== 0 || map[dot2.x + dot2.y * 100] !== 0) {
+                // 如果相邻位置有值，就结束斜向写入
+                return false;
+            }
+        }
         if (map[dot.x + dot.y * 100] === 0) {
             map[dot.x + dot.y * 100] = 2;
             // wrap.childNodes[dot.x + dot.y * 100].dataset.status = 2;// 是否显示当前temp待遍历元素
@@ -116,14 +139,13 @@ async function search(start, end) {
         setStatus(thisDot, 3);
         wrap.childNodes[thisDot.x + thisDot.y * 100].dataset.status = 3;
 
-        // todo: 处理好斜向
-        // enterList({ x: thisDot.x - 1, y: thisDot.y - 1}, temp, thisDot);// 左上
+        enterList({ x: thisDot.x - 1, y: thisDot.y - 1}, temp, thisDot);// 左上
         enterList({ x: thisDot.x - 0, y: thisDot.y - 1}, temp, thisDot);// 上
-        // enterList({ x: thisDot.x + 1, y: thisDot.y - 1}, temp, thisDot);// 右上
+        enterList({ x: thisDot.x + 1, y: thisDot.y - 1}, temp, thisDot);// 右上
         enterList({ x: thisDot.x + 1, y: thisDot.y + 0}, temp, thisDot);// 右
-        // enterList({ x: thisDot.x + 1, y: thisDot.y + 1}, temp, thisDot);// 右下
+        enterList({ x: thisDot.x + 1, y: thisDot.y + 1}, temp, thisDot);// 右下
         enterList({ x: thisDot.x - 0, y: thisDot.y + 1}, temp, thisDot);// 下
-        // enterList({ x: thisDot.x - 1, y: thisDot.y + 1}, temp, thisDot);// 左下
+        enterList({ x: thisDot.x - 1, y: thisDot.y + 1}, temp, thisDot);// 左下
         enterList({ x: thisDot.x - 1, y: thisDot.y + 0}, temp, thisDot);// 左
         // console.log(temp)
     }
@@ -134,7 +156,6 @@ function init() {
     wrap.addEventListener('mousedown', () => {pressDown = true});
     wrap.addEventListener('mouseup', () => {pressDown = false});
     wrap.addEventListener('contextmenu', event => {
-        // todo: 删除target与start
         event.preventDefault();
         map.fill(0)
         review();
