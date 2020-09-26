@@ -6,3 +6,4 @@
 2. 实现上下左右方向的广度优先搜索
 
 childNodes/children/childElementCount 的区别
+斜向搜索不穿墙

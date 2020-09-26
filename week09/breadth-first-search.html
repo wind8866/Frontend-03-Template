@@ -28,6 +28,9 @@
         .wrap .item[data-status="3"] {
             background-color: #888;
         }
+        .wrap .item[data-status="4"] {
+            background: lightseagreen;
+        }
         .wrap .item[data-start] {
             outline: 1px solid lightgreen;
         }
@@ -41,41 +44,64 @@
 <!-- <button id="clean">clean</button> -->
 <div id="wrap" class="wrap"></div>
 <script>
-// status: 0空；1墙；2后续操作；3否
+// status: 0空；1墙；2后续操作；3否；4路径
 // 
 let pressDown = false;
 const wrap = document.querySelector('#wrap');
 let map = [];
+let mapPath = [];
 init();
 console.log(`search({ x: 5, y: 6}, {x: 56, y: 39})`);
 
-function pause() {
+function pause(timer = 5) {
     return new Promise((resolve, reject) => {
-        setTimeout(resolve, 5);
-    })
+        setTimeout(resolve, timer);
+    });
 }
 
 function review() {
     const nodeList = wrap.childNodes;
     for(let i = 0;i < map.length;i++) {
         nodeList[i].dataset.status = map[i];
+        nodeList[i].dataset.remove = map[i];
+        nodeList[i].removeAttribute('data-start');
+        delete nodeList[i].dataset.target;
     }
 }
 function setStatus(dot, status) {
     map[dot.x + dot.y * 100] = status;
     wrap.childNodes[dot.x + dot.y * 100].dataset.status = status;
 }
-function enterList(dot, temp) {
+function enterList(dot, temp, beforeDot) {
     if (dot.x >= 0 && dot.x < 100 && dot.y >= 0 && dot.y < 100) {
         if (map[dot.x + dot.y * 100] === 0) {
             map[dot.x + dot.y * 100] = 2;
             // wrap.childNodes[dot.x + dot.y * 100].dataset.status = 2;// 是否显示当前temp待遍历元素
+            mapPath[dot.x + dot.y * 100] = beforeDot;
             temp.push(dot);
         }
     }
 }
+async function showPath(start, end) {
+    let path = [];
+    let thisDot = end;
+    path.unshift(end);
+    while(true) {
+        if (thisDot.x === start.x && thisDot.y === start.y) {
+            break;
+        }
+        path.unshift(mapPath[thisDot.x + thisDot.y * 100]);
+        thisDot = mapPath[thisDot.x + thisDot.y * 100];
+    }
+    console.log(path);
+    for (let dot of path) {
+        await pause(50);
+        setStatus(dot, 4);
+    }
+}
 async function search(start, end) {
     console.log(start, end)
+    mapPath = [...map];
     wrap.childNodes[start.x + start.y * 100].dataset.start = '';
     wrap.childNodes[end.x + end.y * 100].dataset.target = '';
     let temp = [start];
@@ -84,23 +110,24 @@ async function search(start, end) {
         const thisDot = temp.shift();
         if (thisDot.x === end.x && thisDot.y === end.y) {
             console.log('🥳', thisDot);
+            showPath(start, end);
             return;
         }
         setStatus(thisDot, 3);
         wrap.childNodes[thisDot.x + thisDot.y * 100].dataset.status = 3;
 
-        // enterList({ x: thisDot.x - 1, y: thisDot.y - 1}, temp);// 左上
-        enterList({ x: thisDot.x - 0, y: thisDot.y - 1}, temp);// 上
-        // enterList({ x: thisDot.x + 1, y: thisDot.y - 1}, temp);// 右上
-        enterList({ x: thisDot.x + 1, y: thisDot.y + 0}, temp);// 右
-        // enterList({ x: thisDot.x + 1, y: thisDot.y + 1}, temp);// 右下
-        enterList({ x: thisDot.x - 0, y: thisDot.y + 1}, temp);// 下
-        // enterList({ x: thisDot.x - 1, y: thisDot.y + 1}, temp);// 左下
-        enterList({ x: thisDot.x - 1, y: thisDot.y + 0}, temp);// 左
+        // todo: 处理好斜向
+        // enterList({ x: thisDot.x - 1, y: thisDot.y - 1}, temp, thisDot);// 左上
+        enterList({ x: thisDot.x - 0, y: thisDot.y - 1}, temp, thisDot);// 上
+        // enterList({ x: thisDot.x + 1, y: thisDot.y - 1}, temp, thisDot);// 右上
+        enterList({ x: thisDot.x + 1, y: thisDot.y + 0}, temp, thisDot);// 右
+        // enterList({ x: thisDot.x + 1, y: thisDot.y + 1}, temp, thisDot);// 右下
+        enterList({ x: thisDot.x - 0, y: thisDot.y + 1}, temp, thisDot);// 下
+        // enterList({ x: thisDot.x - 1, y: thisDot.y + 1}, temp, thisDot);// 左下
+        enterList({ x: thisDot.x - 1, y: thisDot.y + 0}, temp, thisDot);// 左
         // console.log(temp)
     }
 }
-
 
 function init() {
     const save = document.querySelector('#save');
