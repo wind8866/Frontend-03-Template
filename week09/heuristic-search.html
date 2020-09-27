@@ -77,19 +77,23 @@ function setStatus(dot, status) {
     map[dot.x + dot.y * 100] = status;
     wrap.childNodes[dot.x + dot.y * 100].dataset.status = status;
 }
+
 class Sorted {
     constructor(data, compare) {
         this.data = data.slice();
         this.compare = compare || ((a, b) => a - b);
+        this.length = data.length;
     }
-
     take() {
-        if(!this.data.length) return;
+        // 始终返回最小值
+        if (!this.data.length) {
+            return;
+        }
         let min = this.data[0];
         let minIndex = 0;
 
-        for(let i = 1; i < this.data.length; i++) {
-            if(this.compare(this.data[i], min) < 0) {
+        for(let i = 1;i < this.data.length; i++) {
+            if (this.compare(this.data[i], min) < 0) {
                 min = this.data[i];
                 minIndex = i;
             }
@@ -97,17 +101,15 @@ class Sorted {
 
         this.data[minIndex] = this.data[this.data.length - 1];
         this.data.pop();
+        --this.length;
         return min;
     }
-
-    give(v) {
-        this.data.push(v);
+    give(dot) {
+        this.data.push(dot);
+        ++this.length;
     }
 }
 
-function distance(point) {
-    return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
-}
 function enterList(dot, temp, beforeDot) {
     if (dot.x >= 0 && dot.x < 100 && dot.y >= 0 && dot.y < 100) {
         // 防止斜向穿墙(设定只有当前目标点dot与上一目标点before同时相邻的点的位置状态为0时才可斜向)
@@ -132,7 +134,7 @@ function enterList(dot, temp, beforeDot) {
             map[dot.x + dot.y * 100] = 2;
             // wrap.childNodes[dot.x + dot.y * 100].dataset.status = 2;// 是否显示当前temp待遍历元素
             mapPath[dot.x + dot.y * 100] = beforeDot;
-            temp.push(dot);
+            temp.give(dot);
         }
     }
 }
@@ -153,18 +155,19 @@ async function showPath(start, end) {
         setStatus(dot, 4);
     }
 }
+function distance(point, end) {
+    return (point.x - end.x) ** 2 + (point.y - end.y) ** 2
+}
 async function search(start, end) {
     console.log(start, end)
     mapPath = [...map];
-    // todo
-    let queue = new Sorted([start.x, start.y], (a, b) => distance(a) - distance(b));
 
     wrap.childNodes[start.x + start.y * 100].dataset.start = '';
     wrap.childNodes[end.x + end.y * 100].dataset.target = '';
-    let temp = [start];
+    let temp = new Sorted([start], (a, b) => distance(a, end) - distance(b, end));
     while (temp.length > 0) {
         await pause();
-        const thisDot = temp.shift();
+        const thisDot = temp.take();
         if (thisDot.x === end.x && thisDot.y === end.y) {
             console.log('🥳', thisDot);
             showPath(start, end);
@@ -173,13 +176,14 @@ async function search(start, end) {
         setStatus(thisDot, 3);
         wrap.childNodes[thisDot.x + thisDot.y * 100].dataset.status = 3;
 
+        // 先走斜向，因为如果先走横竖，斜向就会被阻挡
         enterList({ x: thisDot.x - 1, y: thisDot.y - 1}, temp, thisDot);// 左上
-        enterList({ x: thisDot.x - 0, y: thisDot.y - 1}, temp, thisDot);// 上
         enterList({ x: thisDot.x + 1, y: thisDot.y - 1}, temp, thisDot);// 右上
-        enterList({ x: thisDot.x + 1, y: thisDot.y + 0}, temp, thisDot);// 右
         enterList({ x: thisDot.x + 1, y: thisDot.y + 1}, temp, thisDot);// 右下
-        enterList({ x: thisDot.x - 0, y: thisDot.y + 1}, temp, thisDot);// 下
         enterList({ x: thisDot.x - 1, y: thisDot.y + 1}, temp, thisDot);// 左下
+        enterList({ x: thisDot.x - 0, y: thisDot.y - 1}, temp, thisDot);// 上
+        enterList({ x: thisDot.x + 1, y: thisDot.y + 0}, temp, thisDot);// 右
+        enterList({ x: thisDot.x - 0, y: thisDot.y + 1}, temp, thisDot);// 下
         enterList({ x: thisDot.x - 1, y: thisDot.y + 0}, temp, thisDot);// 左
         // console.log(temp)
     }
