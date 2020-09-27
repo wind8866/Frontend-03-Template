@@ -110,7 +110,7 @@ class Sorted {
     }
 }
 
-function enterList(dot, temp, beforeDot) {
+function enterList(dot, temp, beforeDot, end) {
     if (dot.x >= 0 && dot.x < 100 && dot.y >= 0 && dot.y < 100) {
         // 防止斜向穿墙(设定只有当前目标点dot与上一目标点before同时相邻的点的位置状态为0时才可斜向)
         const count = Math.abs((dot.x - beforeDot.x) + (dot.y - beforeDot.y));
@@ -130,12 +130,29 @@ function enterList(dot, temp, beforeDot) {
                 return false;
             }
         }
-        if (map[dot.x + dot.y * 100] === 0) {
+        // 如果为墙的点距离目标比其他值近，则优先give墙附近的点
+        // todo: 能不能先沿着墙走，这样可以缩短搜索数量
+        if (map[dot.x + dot.y * 100] === 1) {
+            const min = temp.take();
+            temp.give(min)
+            if (distance(dot, end) - distance(min, end) < 0) {
+                const thisDot = beforeDot;
+                enterList({ x: thisDot.x - 1, y: thisDot.y - 1}, temp, thisDot, end);// 左上
+                enterList({ x: thisDot.x + 1, y: thisDot.y - 1}, temp, thisDot, end);// 右上
+                enterList({ x: thisDot.x + 1, y: thisDot.y + 1}, temp, thisDot, end);// 右下
+                enterList({ x: thisDot.x - 1, y: thisDot.y + 1}, temp, thisDot, end);// 左下
+                enterList({ x: thisDot.x - 0, y: thisDot.y - 1}, temp, thisDot, end);// 上
+                enterList({ x: thisDot.x + 1, y: thisDot.y + 0}, temp, thisDot, end);// 右
+                enterList({ x: thisDot.x - 0, y: thisDot.y + 1}, temp, thisDot, end);// 下
+                enterList({ x: thisDot.x - 1, y: thisDot.y + 0}, temp, thisDot, end);// 左
+            }
+        } else if (map[dot.x + dot.y * 100] === 0) {
             map[dot.x + dot.y * 100] = 2;
             // wrap.childNodes[dot.x + dot.y * 100].dataset.status = 2;// 是否显示当前temp待遍历元素
             mapPath[dot.x + dot.y * 100] = beforeDot;
             temp.give(dot);
         }
+        
     }
 }
 async function showPath(start, end) {
@@ -177,14 +194,14 @@ async function search(start, end) {
         wrap.childNodes[thisDot.x + thisDot.y * 100].dataset.status = 3;
 
         // 先走斜向，因为如果先走横竖，斜向就会被阻挡
-        enterList({ x: thisDot.x - 1, y: thisDot.y - 1}, temp, thisDot);// 左上
-        enterList({ x: thisDot.x + 1, y: thisDot.y - 1}, temp, thisDot);// 右上
-        enterList({ x: thisDot.x + 1, y: thisDot.y + 1}, temp, thisDot);// 右下
-        enterList({ x: thisDot.x - 1, y: thisDot.y + 1}, temp, thisDot);// 左下
-        enterList({ x: thisDot.x - 0, y: thisDot.y - 1}, temp, thisDot);// 上
-        enterList({ x: thisDot.x + 1, y: thisDot.y + 0}, temp, thisDot);// 右
-        enterList({ x: thisDot.x - 0, y: thisDot.y + 1}, temp, thisDot);// 下
-        enterList({ x: thisDot.x - 1, y: thisDot.y + 0}, temp, thisDot);// 左
+        enterList({ x: thisDot.x - 1, y: thisDot.y - 1}, temp, thisDot, end);// 左上
+        enterList({ x: thisDot.x + 1, y: thisDot.y - 1}, temp, thisDot, end);// 右上
+        enterList({ x: thisDot.x + 1, y: thisDot.y + 1}, temp, thisDot, end);// 右下
+        enterList({ x: thisDot.x - 1, y: thisDot.y + 1}, temp, thisDot, end);// 左下
+        enterList({ x: thisDot.x - 0, y: thisDot.y - 1}, temp, thisDot, end);// 上
+        enterList({ x: thisDot.x + 1, y: thisDot.y + 0}, temp, thisDot, end);// 右
+        enterList({ x: thisDot.x - 0, y: thisDot.y + 1}, temp, thisDot, end);// 下
+        enterList({ x: thisDot.x - 1, y: thisDot.y + 0}, temp, thisDot, end);// 左
         // console.log(temp)
     }
 }
