@@ -77,6 +77,37 @@ function setStatus(dot, status) {
     map[dot.x + dot.y * 100] = status;
     wrap.childNodes[dot.x + dot.y * 100].dataset.status = status;
 }
+class Sorted {
+    constructor(data, compare) {
+        this.data = data.slice();
+        this.compare = compare || ((a, b) => a - b);
+    }
+
+    take() {
+        if(!this.data.length) return;
+        let min = this.data[0];
+        let minIndex = 0;
+
+        for(let i = 1; i < this.data.length; i++) {
+            if(this.compare(this.data[i], min) < 0) {
+                min = this.data[i];
+                minIndex = i;
+            }
+        }
+
+        this.data[minIndex] = this.data[this.data.length - 1];
+        this.data.pop();
+        return min;
+    }
+
+    give(v) {
+        this.data.push(v);
+    }
+}
+
+function distance(point) {
+    return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
+}
 function enterList(dot, temp, beforeDot) {
     if (dot.x >= 0 && dot.x < 100 && dot.y >= 0 && dot.y < 100) {
         // 防止斜向穿墙(设定只有当前目标点dot与上一目标点before同时相邻的点的位置状态为0时才可斜向)
@@ -125,6 +156,9 @@ async function showPath(start, end) {
 async function search(start, end) {
     console.log(start, end)
     mapPath = [...map];
+    // todo
+    let queue = new Sorted([start.x, start.y], (a, b) => distance(a) - distance(b));
+
     wrap.childNodes[start.x + start.y * 100].dataset.start = '';
     wrap.childNodes[end.x + end.y * 100].dataset.target = '';
     let temp = [start];
