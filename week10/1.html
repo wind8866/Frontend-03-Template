@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script>
+const regexp = /([0-9.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+const dic = [
+    'Number',
+    'Whitespace',
+    'LineTerminator',
+    '*',
+    '/',
+    '+',
+    '-',
+];
+
+function tokenize(source) {
+    let result = null;
+    while(true) {
+        result = regexp.exec(source);
+        if(!result) {
+            console.log('end');
+            break;
+        }
+        for (let i = 1;i <= dic.length;i++) {
+            // 匹配的分组从第二个开始，所以i最开始为1
+            if (result[i]) {
+                console.log(dic[i - 1]);
+            }
+            // console.log(result);
+        }
+    }
+}
+tokenize('1024 + 10 * 25');
+</script>
+</body>
+</html>
