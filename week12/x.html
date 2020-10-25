@@ -1,3 +1,7 @@
+<input type="range" min=0 max=255 id="r">
+<input type="range" min=0 max=255 id="g">
+<input type="range" min=0 max=255 id="b">
+<div id="color" style="width: 100px;height: 100px;"></div>
 <script>
 // 将状态与状态关联的回调进行数据关联
 const callbacks = new Map();
@@ -6,16 +10,23 @@ let usedReactivties = [];
 // 全局表格，加一个缓存
 let reactivties = new Map();
 let object = {
-    a: {
-        b: 3
-    },
-    b: 2,
+    r: 1,
+    g: 1,
+    b: 1
 }
 let po = reactive(object);
 
 effect(() => {
-    console.log(po.a.b);
+    document.getElementById('r').value = po.r;
+    document.getElementById('g').value = po.g;
+    document.getElementById('b').value = po.b;
 });
+effect(() => {
+    document.getElementById('color').style.backgroundColor = `rgb(${po.r}, ${po.g}, ${po.b})`;
+});
+document.getElementById('r').addEventListener('input', event => po.r = event.target.value)
+document.getElementById('g').addEventListener('input', event => po.g = event.target.value)
+document.getElementById('b').addEventListener('input', event => po.b = event.target.value)
 
 function effect(callback) {
     usedReactivties = [];
