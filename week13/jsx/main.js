@@ -1,72 +1,20 @@
-function createElement(type, attributes, ...children) {
-    let element = null;
-    // 鸭子类型：无论element是鸭子（dom）还是狗子（组件），都调用相关方法
-    if (typeof type === 'string') {
-        element = new ElementWrapper(type);
-    } else {
-        element = new type;
-    }
-    
-    for (const name in attributes) {
-        element.setAttribute(name, attributes[name]);
-    }
-    // children会自动编译为 createElement(child)
-    for (const child of children) {
-        if (typeof child === 'string') {
-            child = new TextWrapper(child);
-        }
-        element.append(child);
-    }
-    return element;
-}
-class TextWrapper {
-    constructor(content) {
-        this.root = document.createTextNode(content);
-    }
-    setAttribute(name, value) {
-        this.root.setAttribute(name, value);
-    }
-    append(child) {
-        child.montTo(this.root);
-    }
-    montTo(parent) {
-        parent.append(this.root);
-    }
-}
-class ElementWrapper {
-    constructor(type) {
-        this.root = document.createElement(type);
-    }
-    setAttribute(name, value) {
-        this.root.setAttribute(name, value);
-    }
-    append(child) {
-        child.montTo(this.root);
-    }
-    montTo(parent) {
-        parent.append(this.root);
-    }
-}
-
-class Div {
+import { createElement, Component } from './framework.js';
+class Carousel extends Component {
     constructor() {
-        this.root = document.createElement('div');
+        super();
     }
-    setAttribute(name, value) {
-        this.root.setAttribute(name, value);
-    }
-    append(child) {
-        child.montTo(this.root);
-    }
-    montTo(parent) {
-        parent.append(this.root);
+    render() {
+        return document.createElement('div');
     }
 }
 
-let a = <Div id="a">
-    <span>d</span>
-    <span>c</span>
-</Div>
+let a = <Carousel/>
+const d = [
+    'https://static001.geekbang.org/resource/image/bb/21/bb38fb7c1073eaee1755f81131f11d21.jpg',
+    'https://static001.geekbang.org/resource/image/1b/21/1b809d9a2bdf3ecc481322d7c9223c21.jpg',
+    'https://static001.geekbang.org/resource/image/b6/4f/b6d65b2f12646a9fd6b8cb2b020d754f.jpg',
+    'https://static001.geekbang.org/resource/image/73/e4/730ea9c393def7975deceb48b3eb6fe4.jpg',
+];
 // 这里 组件的a.root才是dom元素，document.body.append(a.root)才可以
 // 但是又不能在DiV内设置this，所以使用另一种办法a.montTo
 a.montTo(document.body);
