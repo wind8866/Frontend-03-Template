@@ -20,6 +20,7 @@ class Carousel extends Component {
         let position = 0;
         this.root.addEventListener('mousedown', event => {
             console.log('down', event)
+            const children = this.root.children;
             const startX = event.clientX;
             /**
              * event对象
@@ -34,19 +35,28 @@ class Carousel extends Component {
             const move = event => {
                 // console.log(event.clientX - startX);
                 const moveOffsetX = event.clientX - startX;
-                for(const child of this.root.children) {
-                    child.style.transition = 'none';
-                    child.style.transform = `translateX(${-position * 500 +  moveOffsetX}px)`;
+                // 当前在屏幕中心位置的元素
+                let current = position - ((moveOffsetX - moveOffsetX % 500) / 500);
+
+                for(const offset of [-1, 0, 1]) {
+                    const pos = (current + offset + children.length) % children.length;
+
+                    children[pos].style.transition = 'none';
+                    children[pos].style.transform = `translateX(${-pos * 500 + offset * 500 + moveOffsetX % 500}px)`;
                 }
             };
             const up = event => {
                 console.log('up')
                 const moveOffsetX = event.clientX - startX;
                 position = position - Math.round(moveOffsetX / 500);
-                for(const child of this.root.children) {
-                    child.style.transition = '';
-                    child.style.transform = `translateX(${-position * 500}px)`;
+                
+                for(const offset of [0, -Math.sign(Math.round(moveOffsetX / 500) - moveOffsetX + 250 * Math.sign(moveOffsetX))]) {
+                    const pos = (position + offset + children.length) % children.length;
+
+                    children[pos].style.transition = '';
+                    children[pos].style.transform = `translateX(${-pos * 500 + offset * 500}px)`;
                 }
+
                 document.removeEventListener('mousemove', move);
                 document.removeEventListener('mouseup', up);
             };
