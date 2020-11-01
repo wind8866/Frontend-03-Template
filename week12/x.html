@@ -1,0 +1,88 @@
+<input type="range" min=0 max=255 id="r">
+<input type="range" min=0 max=255 id="g">
+<input type="range" min=0 max=255 id="b">
+<div id="color" style="width: 100px;height: 100px;"></div>
+<script>
+// 将状态与状态关联的回调进行数据关联
+const callbacks = new Map();
+// 函数执行时获取状态，记录获取的对象与具体对象的键
+let usedReactivties = [];
+// 全局表格，加一个缓存
+let reactivties = new Map();
+let object = {
+    r: 1,
+    g: 1,
+    b: 1
+}
+let po = reactive(object);
+
+effect(() => {
+    document.getElementById('r').value = po.r;
+    document.getElementById('g').value = po.g;
+    document.getElementById('b').value = po.b;
+});
+effect(() => {
+    document.getElementById('color').style.backgroundColor = `rgb(${po.r}, ${po.g}, ${po.b})`;
+});
+document.getElementById('r').addEventListener('input', event => po.r = event.target.value)
+document.getElementById('g').addEventListener('input', event => po.g = event.target.value)
+document.getElementById('b').addEventListener('input', event => po.b = event.target.value)
+
+function effect(callback) {
+    usedReactivties = [];
+    callback();
+    console.log(usedReactivties);
+    for(let reactivity of usedReactivties) {
+        if(!callbacks.has(reactivity[0])) {
+            // reactivity[0]为当前对象，因为可能有好几个实例
+            callbacks.set(reactivity[0], new Map());
+        }
+        if(!callbacks.get(reactivity[0]).has(reactivity[1])) {
+            callbacks.get(reactivity[0]).set(reactivity[1], []);
+        }
+        // callbacks[{a: 1,b: 2,}]['a'] = [callback, callback2]
+        callbacks.get(reactivity[0]).get(reactivity[1]).push(callback);
+    }
+}
+
+function reactive(object) {
+    if(reactivties.has(object)) {
+        return reactivties.get(object);
+    }
+    let proxy =  new Proxy(object, {
+        set(obj, prop, val) {
+            obj[prop] = val;
+            console.log(obj, prop, val);
+            if (callbacks.has(obj)) {
+                if (callbacks.get(obj).has(prop)) {
+                    for(const callback of callbacks.get(obj).get(prop)) {
+                        callback();
+                    }
+                }
+            }
+
+            // for(const callback of callbacks) {
+            //     callback();
+            // }
+            return obj[prop];
+        },
+        get(obj, prop) {
+            console.log(obj, prop);
+            usedReactivties.push([obj, prop]);
+            if (typeof obj[prop] === 'object') {
+                // 递归的将其绑定为可控制对象
+                // 这里返回的Proxy与访问函数里面po.a.b的不是同一个，这里返回的是经过Proxy特殊处理的，变量指向的地址已经改变了
+                // 需要全局表格记录，这里为什么加一个缓存就好了？防止多次调用po.a.b影响性能？
+                return reactive(obj[prop]);
+            }
+            return obj[prop];
+        }
+    });
+    reactivties.set(object, proxy);
+    return proxy;
+}
+
+
+// 助教老师的注释版本
+// https://shimo.im/docs/yvXYjYpqdTjvGtYy/read
+</script>
