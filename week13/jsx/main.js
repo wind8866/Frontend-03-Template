@@ -16,7 +16,46 @@ class Carousel extends Component {
             div.style.backgroundImage = `url(${src})`;
             this.root.append(div);
         }
-        let currentIndex = 0;
+
+        let position = 0;
+        this.root.addEventListener('mousedown', event => {
+            console.log('down', event)
+            const startX = event.clientX;
+            /**
+             * event对象
+             * clientX: 返回鼠标位置相对于浏览器窗口左上角的水平坐标
+             * layerX: 可能是chrome浏览器的私有属性
+             * movementX: 返回当前位置与上一个mousemove事件之间的水平距离
+             * offsetX: 返回鼠标位置与目标节点左侧的padding边缘的水平距离
+             * pageX: 返回鼠标位置与文档左侧边缘的距离
+             * screenX: 返回鼠标位置相对于屏幕左上角的水平坐标
+             * x
+             */
+            const move = event => {
+                // console.log(event.clientX - startX);
+                const moveOffsetX = event.clientX - startX;
+                for(const child of this.root.children) {
+                    child.style.transition = 'none';
+                    child.style.transform = `translateX(${-position * 500 +  moveOffsetX}px)`;
+                }
+            };
+            const up = event => {
+                console.log('up')
+                const moveOffsetX = event.clientX - startX;
+                position = position - Math.round(moveOffsetX / 500);
+                for(const child of this.root.children) {
+                    child.style.transition = '';
+                    child.style.transform = `translateX(${-position * 500}px)`;
+                }
+                document.removeEventListener('mousemove', move);
+                document.removeEventListener('mouseup', up);
+            };
+
+            document.addEventListener('mouseup', up);
+            document.addEventListener('mousemove', move);
+        })
+
+        /*let currentIndex = 0;
         setInterval(() => {
             const children = this.root.children;
             let nextIndex = (currentIndex + 1) % children.length;
@@ -38,7 +77,7 @@ class Carousel extends Component {
 
                 currentIndex = nextIndex;
             }, 16)
-        }, 3000)
+        }, 3000)*/
         return this.root;
     }
     montTo(parent) {
