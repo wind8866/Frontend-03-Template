@@ -16,14 +16,29 @@ class Carousel extends Component {
             div.style.backgroundImage = `url(${src})`;
             this.root.append(div);
         }
-        let current = 0;
+        let currentIndex = 0;
         setInterval(() => {
-            current = ++current % this.root.children.length;
-            for(const child of this.root.children) {
-                child.style.transform = `translateX(${-100 * current}%)`;
-            }
-        }, 3000)
+            const children = this.root.children;
+            let nextIndex = (currentIndex + 1) % children.length;
 
+            const current = children[currentIndex];
+            const next = children[nextIndex];
+
+            next.style.transition = 'none';
+            // 归位状态
+            // 将第n个元素挪到所见位置（消除本身位置影响）：-nextIndex * 100
+            // 再向后挪一个，即下一个位置
+            next.style.transform = `translateX(${-nextIndex * 100 + 100}%)`;
+            // 这里设置timeout的意思防止后面的值把前面的值覆盖后，只执行一次render
+            setTimeout(() => {
+                // 目标状态
+                next.style.transition = '';
+                current.style.transform = `translateX(${-currentIndex * 100 - 100}%)`;
+                next.style.transform = `translateX(${-nextIndex * 100}%)`;
+
+                currentIndex = nextIndex;
+            }, 16)
+        }, 3000)
         return this.root;
     }
     montTo(parent) {
