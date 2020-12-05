@@ -1,10 +1,10 @@
 const http = require('http');
 const fs = require('fs');
-
-console.log()
+const archiver = require('archiver');
 
 const serverPort = '118.190.156.209';
 const localPort = '127.0.0.1';
+const fileURL = './template.html'
 
 const request = http.request({
     hostname: process.env.NODE_ENV === 'PROD' ? serverPort : localPort,
@@ -17,5 +17,12 @@ const request = http.request({
     console.log(response);
 });
 
-const file = fs.createReadStream('./template.html');
-file.pipe(request);
+const archive = archiver('zip', {
+    zlib: { level: 9 }
+});
+archive.directory('./sample/', false);
+archive.finalize();
+archive.pipe(request);
+
+
+

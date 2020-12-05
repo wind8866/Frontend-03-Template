@@ -1,8 +1,6 @@
 const http = require('http');
-const fs = require('fs');
+const unzipper = require('unzipper');
 
 http.createServer(function(request, response) {
-    // console.log(request.headers);
-    const outfile = fs.createWriteStream('../server/public/index.html')
-    request.pipe(outfile);
+    request.pipe(unzipper.Extract({ path: '../server/public' }))
 }).listen(8082);
