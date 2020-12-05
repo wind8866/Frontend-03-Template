@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "scp": "scp -r ./* root@118.190.156.209:/root/server"
+    "publish": "scp -r ./* root@118.190.156.209:/root/server"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",

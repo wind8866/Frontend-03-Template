@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "publish": "scp -r ./* root@118.190.156.209:/root/publish-server"
   },
   "keywords": [],
   "author": "",

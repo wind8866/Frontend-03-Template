@@ -1,8 +1,11 @@
 const http = require('http');
 const fs = require('fs');
 
+const serverPort = '118.190.156.209';
+const localPort = '127.0.0.1';
+
 const request = http.request({
-    hostname: '127.0.0.1',
+    hostname: serverPort,
     port: 8082,
     method: "POST",
     headers: {
