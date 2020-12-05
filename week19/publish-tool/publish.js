@@ -12,7 +12,7 @@ const request = http.request({
     console.log(response);
 });
 
-const file = fs.createReadStream('./package.json');
+const file = fs.createReadStream('./template.html');
 file.on('data', chunk => {
     // console.log(chunk.toString());
     request.write(chunk);
