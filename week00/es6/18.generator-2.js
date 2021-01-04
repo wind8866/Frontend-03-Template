@@ -18,18 +18,18 @@ function fetch(url) {
 }
 function* getUser() {
     status.loading = true;
-    const data = yield fetch('/user');
+    yield fetch('/user');
+    status.loading = false;
 }
 function created() {
     const g = getUser();
     const user = g.next();
     user.value.then(data => {
         console.log(data.name);
+        // render user
     }).catch(err => {
         console.err(err);
-    }).finally(() => {
-        status.loading = false;
-    });
+    }).finally(() => g.next());
 }
 created();
 

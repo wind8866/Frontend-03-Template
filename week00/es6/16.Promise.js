@@ -181,6 +181,7 @@ ab.then(() => d()).then(function(who) {
 
 /**
  * 下面的代码p1和p2其实是并行执行。
+ * p2依赖p1的执行结果，会等待状态变化后才改变自己的状态。
  * p2返回一个Promise，那么p1的状态决定了p2的状态
  */
 let moment = +(new Date());

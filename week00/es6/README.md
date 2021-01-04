@@ -2,6 +2,10 @@
 - [ ] Generator
 - [ ] async
 - [ ] Class
+- [ ] Module 的加载实现
+- [ ] 读懂规格
+- [ ] Proxy
+- [ ] Reflect
 
 ### ES6
 - [x] 前言
@@ -18,8 +22,8 @@
 - [x] 对象的新增方法
 - [x] Symbol
 - [x] Set 和 Map 数据结构
-- [ ] Proxy
-- [ ] Reflect
+- [x] Proxy
+- [x] Reflect
 - [x] Promise 对象
 - [ ] Iterator 和 for...of 循环
 - [x] Generator 函数的语法
@@ -27,15 +31,15 @@
 - [x] async 函数
 - [x] Class 的基本语法
 - [x] Class 的继承
-- [ ] Module 的语法
-- [ ] Module 的加载实现
-- [ ] 编程风格
-- [ ] 读懂规格
+- [x] Module 的语法
+- [x] Module 的加载实现
+- [x] 编程风格
+- [x] 读懂规格
 - [ ] 异步遍历器⏳
 - [ ] ArrayBuffer
 - [ ] 最新提案
 - [ ] Decorator
-- [ ] 参考链接
+- [x] 参考链接
 
 #### next
 Promise 对象
