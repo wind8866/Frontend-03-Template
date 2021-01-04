@@ -1,4 +1,6 @@
+const json5 = require('json5');
 const path = require('path');
+
 module.exports = {
     entry: './src/index.js',
     output: {
@@ -19,6 +21,13 @@ module.exports = {
                 use: [
                     'file-loader',
                 ]
+            },
+            {
+                test: /\.json5$/,
+                type: 'json',
+                parser: {
+                    parse: json5.parse
+                }
             }
         ]
     }
