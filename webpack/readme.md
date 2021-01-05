@@ -107,3 +107,5 @@ manifest: 当 compiler 开始执行、解析和映射应用程序时，它会保
 
 
 ## 指南
+- [ ] [预获取/预加载模块(prefetch/preload module)](https://webpack.docschina.org/guides/code-splitting/#prefetchingpreloading-modules)
+- [ ] [bundle 分析](https://webpack.docschina.org/guides/code-splitting/#bundle-analysis)
