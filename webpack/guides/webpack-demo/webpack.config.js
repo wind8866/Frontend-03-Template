@@ -18,8 +18,10 @@ module.exports = {
         }),
     ],
     optimization: {
+        // 使文件hash不变
+        moduleIds: 'deterministic',
         runtimeChunk: 'single',
-        splitChunks: {
+        splitChunks: {// TODO： 不知道这个的作用
             cacheGroups: {
                 vendor: {
                     test: /[\\/]node_modules[\\/]/,
